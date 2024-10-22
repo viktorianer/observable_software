@@ -1,0 +1,12 @@
+<h1>Upload Pattern</h1>
+
+<%= form_with(url: patterns_path, method: :post, local: true, multipart: true) do |form| %>
+  <div>
+    <%= form.label :fcjson, "Select FCJSON file" %>
+    <%= form.file_field :fcjson, accept: ".fcjson" %>
+  </div>
+
+  <div>
+    <%= form.submit "Upload Pattern" %>
+  </div>
+<% end %>

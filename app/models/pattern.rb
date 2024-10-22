@@ -2,11 +2,13 @@ class Pattern < ApplicationRecord
   has_one_attached :preview
 
   def self.from_fcjson(fcjson_data)
-    parsed_data = JSON.parse(fcjson_data)
-    pattern = new(name: parsed_data.dig("info", "title"))
+    parsed_data = JSON.parse(fcjson_data, symbolize_names: true)
+    width = parsed_data.dig(:model, :images, 0, :width)
+    height = parsed_data.dig(:model, :images, 0, :height)
+    pattern = new(name: parsed_data.dig(:info, :title))
     threads = from_fcjson_to_threads(fcjson_data)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
-    combined_image.resize("64x64")
+    combined_image.resize("#{width * 32}x#{height * 32}")
 
     threads.each_with_index do |row, y|
       row.each_with_index do |thread_id, x|
