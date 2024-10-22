@@ -4,7 +4,8 @@ class PatternsController < ApplicationController
   end
 
   def create
-    pattern = Pattern.from_fcjson(params[:fcjson].read)
+    pattern = Pattern.create(name: "Untitled", definition: params[:fcjson].read)
+    CreatePatternFromFcjsonJob.perform_later(pattern.id)
     redirect_to pattern_path(pattern)
   end
 

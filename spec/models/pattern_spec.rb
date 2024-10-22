@@ -1,12 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Pattern, type: :model do
-  describe ".from_fcjson" do
+  describe "#create_preview" do
     it "creates a pattern with a preview image from FCJSON" do
       fcjson_data = File.read(Rails.root.join("spec/support/example.fcjson"))
 
-      pattern = Pattern.from_fcjson(fcjson_data)
-      expect(pattern).to be_a(Pattern)
+      pattern = Pattern.create(definition: fcjson_data)
+      pattern.create_preview
+
       expect(pattern.preview).to be_attached
       expect(pattern.preview.content_type).to start_with("image/")
       expect(pattern.preview).to be_attached

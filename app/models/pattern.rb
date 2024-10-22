@@ -1,12 +1,12 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
 
-  def self.from_fcjson(fcjson_data)
-    parsed_data = JSON.parse(fcjson_data, symbolize_names: true)
+  def create_preview
+    parsed_data = JSON.parse(definition, symbolize_names: true)
     width = parsed_data.dig(:model, :images, 0, :width)
     height = parsed_data.dig(:model, :images, 0, :height)
-    pattern = new(name: parsed_data.dig(:info, :title))
-    threads = from_fcjson_to_threads(fcjson_data)
+    update!(name: parsed_data.dig(:info, :title))
+    threads = Pattern.from_fcjson_to_threads(definition)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
     combined_image.resize("#{width * 32}x#{height * 32}")
 
@@ -30,13 +30,13 @@ class Pattern < ApplicationRecord
     combined_image.write(temp_file.path)
     temp_file.rewind
 
-    pattern.preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
-    pattern.save!
+    preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
+    save!
 
     temp_file.close
     temp_file.unlink
 
-    pattern
+    self
   end
 
   def self.from_fcjson_to_threads(fcjson_data)
