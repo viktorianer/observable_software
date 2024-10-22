@@ -67,3 +67,5 @@ end
 gem "rspec", "~> 3.13"
 
 gem "rspec-rails", "~> 7.0"
+
+gem "mini_magick", "~> 5.0"
