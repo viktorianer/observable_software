@@ -16,4 +16,15 @@ RSpec.describe Pattern, type: :model do
       expect(pattern.name).to eq("Testing")
     end
   end
+
+  describe ".from_fcjson_to_threads" do
+    it "returns an array of arrays of thread ids" do
+      fcjson_data = File.read(Rails.root.join("spec/support/example.fcjson"))
+      threads = Pattern.from_fcjson_to_threads(fcjson_data)
+      expect(threads).to eq([
+        [ "01", "307" ],
+        [ "820", "aida" ]
+      ])
+    end
+  end
 end

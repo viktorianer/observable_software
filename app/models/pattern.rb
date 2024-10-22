@@ -4,10 +4,7 @@ class Pattern < ApplicationRecord
   def self.from_fcjson(fcjson_data)
     parsed_data = JSON.parse(fcjson_data)
     pattern = new(name: parsed_data.dig("info", "title"))
-    threads = [
-      [ "01", "307" ],
-      [ "820", "aida" ]
-    ]
+    threads = from_fcjson_to_threads(fcjson_data)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
     combined_image.resize("64x64")
 
@@ -38,5 +35,22 @@ class Pattern < ApplicationRecord
     temp_file.unlink
 
     pattern
+  end
+
+  def self.from_fcjson_to_threads(fcjson_data)
+    parsed_data = JSON.parse(fcjson_data, symbolize_names: true)
+    crosses = parsed_data.dig(:model, :images, 0, :layers, 0, :cross)
+    width = parsed_data.dig(:model, :images, 0, :width)
+
+    crosses.map do |cross|
+      if cross == -1
+        "aida"
+      else
+        floss_index = parsed_data.dig(:model, :images, 0, :crossIndexes, cross, :fi)
+        floss_indices = parsed_data.dig(:model, :images, 0, :flossIndexes)
+        floss = floss_indices.fetch(floss_index)
+        floss.fetch(:id)
+      end
+    end.each_slice(width).to_a
   end
 end
