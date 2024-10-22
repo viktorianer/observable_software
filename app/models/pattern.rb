@@ -3,30 +3,37 @@ class Pattern < ApplicationRecord
 
   def self.from_fcjson(fcjson_data)
     parsed_data = JSON.parse(fcjson_data)
-    pattern = new(name: parsed_data["name"])
-
-    pixels = [
-      255, 0, 0,   # Red
-      0, 255, 0,   # Green
-      0, 0, 255,   # Blue
-      255, 255, 0, # Yellow
-      255, 0, 255, # Magenta
-      0, 255, 255, # Cyan
-      128, 128, 128, # Gray
-      0, 0, 0,     # Black
-      255, 255, 255 # White
+    pattern = new(name: parsed_data.dig("info", "title"))
+    threads = [
+      [ "01", "307" ],
+      [ "820", "aida" ]
     ]
+    combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
+    combined_image.resize("64x64")
 
-    # Create the image using `import_pixels`
-    image = MiniMagick::Image.import_pixels(pixels.pack("C*"), 3, 3, 8, "rgb", "png")
+    threads.each_with_index do |row, y|
+      row.each_with_index do |thread_id, x|
+        thread_image_path = Rails.root.join("data", "threads", "#{thread_id}.png")
+
+        if File.exist?(thread_image_path)
+          thread_image = MiniMagick::Image.open(thread_image_path)
+          combined_image = combined_image.composite(thread_image) do |c|
+            c.compose "Over"
+            c.geometry "+#{x*32}+#{y*32}"
+          end
+        else
+          Rails.logger.warn "Thread image not found: #{thread_id}.png"
+        end
+      end
+    end
+
     temp_file = Tempfile.new([ "preview", ".png" ], "tmp")
-    image.write(temp_file.path)
+    combined_image.write(temp_file.path)
     temp_file.rewind
 
     pattern.preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
     pattern.save!
 
-    # Close and unlink the temporary file
     temp_file.close
     temp_file.unlink
 

@@ -1,0 +1,167 @@
+{
+  "sv": 1,
+  "v": 103,
+  "modelId": "451a58f6-64a5-496c-85cc-871803aba6a8",
+  "model": {
+    "images": [
+      {
+        "name": "Testing",
+        "width": 2,
+        "height": 2,
+        "flossIndexes": [
+          {
+            "id": "820",
+            "name": "Royal Blue - Very Dark",
+            "rgb": [
+              27,
+              56,
+              136
+            ],
+            "xc": "202063",
+            "sys": "DMC",
+            "hex": 1783944,
+            "state": {},
+            "active": true,
+            "symbol": "sm0",
+            "order": 6
+          },
+          {
+            "id": "828",
+            "name": "Sky Blue - Ultra Very Light",
+            "rgb": [
+              188,
+              219,
+              225
+            ],
+            "xc": "a6c9d4",
+            "sys": "DMC",
+            "hex": 12377057,
+            "state": {},
+            "active": true,
+            "symbol": "sm5",
+            "order": 5
+          },
+          {
+            "id": "905",
+            "name": "Parrot Green - Dark",
+            "rgb": [
+              78,
+              128,
+              44
+            ],
+            "xc": "3d7123",
+            "sys": "DMC",
+            "hex": 5144620,
+            "state": {},
+            "active": true,
+            "symbol": "sm140",
+            "order": 4
+          },
+          {
+            "id": "321",
+            "name": "Red",
+            "rgb": [
+              227,
+              28,
+              56
+            ],
+            "xc": "ac0025",
+            "sys": "DMC",
+            "hex": 14883896,
+            "state": {},
+            "active": true,
+            "symbol": "sm4",
+            "order": 3
+          },
+          {
+            "id": "307",
+            "name": "Lemon",
+            "rgb": [
+              250,
+              237,
+              75
+            ],
+            "xc": "fbde18",
+            "sys": "DMC",
+            "hex": 16444747,
+            "state": {},
+            "active": true,
+            "symbol": "sm61",
+            "order": 2
+          },
+          {
+            "id": "01",
+            "name": "Tin - White",
+            "rgb": [
+              203,
+              203,
+              204
+            ],
+            "xc": "c5c5c5",
+            "sys": "DMC",
+            "hex": 13355980,
+            "state": {},
+            "active": true,
+            "symbol": "sm28"
+          }
+        ],
+        "crossIndexes": [
+          {
+            "tp": "cr",
+            "fi": 5
+          },
+          {
+            "tp": "cr",
+            "fi": 4
+          },
+          {
+            "tp": "cr",
+            "fi": 0
+          }
+        ],
+        "sources": [],
+        "layers": [
+          {
+            "width": 2,
+            "height": 2,
+            "position": {
+              "top": 0,
+              "left": 0
+            },
+            "cross": [
+              0,
+              1,
+              2,
+              -1
+            ],
+            "backstitch": []
+          }
+        ],
+        "defaults": {
+          "crossStrands": 2,
+          "bsStrands": 1
+        },
+        "cloth": {
+          "texture": "aidafbfbf9",
+          "isFixed": true,
+          "color": [
+            251,
+            251,
+            249
+          ],
+          "type": "aida"
+        }
+      }
+    ],
+    "id": "451a58f6-64a5-496c-85cc-871803aba6a8",
+    "renderFilter": {
+      "gamma": 0.7
+    }
+  },
+  "info": {
+    "title": "Testing",
+    "description": "Testing Pattern"
+  },
+  "ts": 1729611952944,
+  "srcs": []
+}
