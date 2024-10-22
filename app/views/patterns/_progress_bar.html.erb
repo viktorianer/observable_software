@@ -1,0 +1,14 @@
+<% if @pattern.generating_preview? %>
+  <div class="w-full max-w-md mx-auto mb-6">
+    <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+      <div class="bg-blue-500 h-full rounded-full transition-all duration-500 ease-out" style="width: <%= @pattern.percentage_converted %>%"></div>
+    </div>
+    <p class="text-center mt-2 text-sm text-gray-600">
+      Preview generating: <%= @pattern.percentage_converted.round %>% complete
+    </p>
+  </div>
+<% elsif @pattern.not_generating_preview? %>
+  <p class="text-center mb-6 text-gray-600">Preview generation will start soon...</p>
+<% elsif @pattern.finished_generating_preview? %>
+  <%= image_tag @pattern.preview, alt: "Pattern Preview for #{@pattern.name}", class: "max-w-full" %>
+<% end %>

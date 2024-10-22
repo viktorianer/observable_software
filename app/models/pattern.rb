@@ -1,7 +1,20 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
 
+  enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
+
+  def start_generating_preview!
+    generating_preview!
+    update!(percentage_converted: 0)
+  end
+
+  def finish_generating_preview!
+    finished_generating_preview!
+    update!(percentage_converted: 100)
+  end
+
   def create_preview
+    start_generating_preview!
     parsed_data = JSON.parse(definition, symbolize_names: true)
     width = parsed_data.dig(:model, :images, 0, :width)
     height = parsed_data.dig(:model, :images, 0, :height)
@@ -9,6 +22,9 @@ class Pattern < ApplicationRecord
     threads = Pattern.from_fcjson_to_threads(definition)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
     combined_image.resize("#{width * 32}x#{height * 32}")
+
+    pixel_percentage_progress_fraction = 100.0 / (width * height)
+    current_pixel_index = 0
 
     threads.each_with_index do |row, y|
       row.each_with_index do |thread_id, x|
@@ -20,6 +36,8 @@ class Pattern < ApplicationRecord
             c.compose "Over"
             c.geometry "+#{x*32}+#{y*32}"
           end
+          current_pixel_index += 1
+          update!(percentage_converted: current_pixel_index * pixel_percentage_progress_fraction)
         else
           Rails.logger.warn "Thread image not found: #{thread_id}.png"
         end
@@ -31,6 +49,7 @@ class Pattern < ApplicationRecord
     temp_file.rewind
 
     preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
+    finish_generating_preview!
     save!
 
     temp_file.close
