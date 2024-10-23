@@ -1,7 +1,63 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
+  has_one_attached :distorted_preview
 
   enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
+
+  def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right)
+    distorted_preview_image = MiniMagick::Image.read(preview.download)
+    distorted_preview_image.write(Rails.root.join("tmp", "preview.png"))
+
+    preview_image = MiniMagick::Image.read(preview.download)
+    distorted_preview_image = MiniMagick::Image.create
+    MiniMagick.convert do |c|
+      c << preview_image.path
+      c.virtual_pixel "transparent"
+      c.distort("Perspective", "#{top_left.map(&:to_s).join(',')},#{transformed_top_left.join(',')} #{top_right.join(',')},#{transformed_top_right.join(',')} #{bottom_left.join(',')},#{transformed_bottom_left.join(',')} #{bottom_right.join(',')},#{transformed_bottom_right.join(',')}")
+      c << distorted_preview_image.path
+    end
+
+    background_image = MiniMagick::Image.open(Rails.root.join("data", "background.png"))
+    composite_image = background_image.composite(distorted_preview_image) do |c|
+      c.geometry "+#{offset[0]}+#{offset[1]}"
+      c.matte
+      c.virtual_pixel "transparent"
+      c.compose "DstOver"
+    end
+    background_image.write(Rails.root.join("tmp", "background.png"))
+    composite_image.write(Rails.root.join("tmp", "composite.png"))
+    composite_image
+  end
+
+  def distort_preview
+    four_corners = [
+      [ 216, 658 ],
+      [ 616, 671 ],
+      [ 207, 1180 ],
+      [ 600, 1216 ]
+    ]
+    top_left = [ 0, 0 ]
+    top_right = [ width*32, 0 ]
+    bottom_left = [ 0, height*32 ]
+    bottom_right = [ width*32, height*32 ]
+
+    x_offset = four_corners.map { |x, y| x }.min
+    y_offset = four_corners.map { |x, y| y }.min
+    offset = [ x_offset, y_offset ]
+    margin = 5
+    transformed_top_left = [ four_corners[0][0], four_corners[0][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] - margin ] }
+    transformed_top_right = [ four_corners[1][0], four_corners[1][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] - margin ] }
+    transformed_bottom_left = [ four_corners[2][0], four_corners[2][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] + margin ] }
+    transformed_bottom_right = [ four_corners[3][0], four_corners[3][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] + margin ] }
+    composite_image = distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right)
+    temp_file = Tempfile.new([ "distorted_preview", ".png" ], "tmp")
+    composite_image.write(temp_file.path)
+    temp_file.rewind
+    distorted_preview.attach(io: temp_file, filename: "distorted_preview.png", content_type: "image/png")
+    save!
+    temp_file.close
+    temp_file.unlink
+  end
 
   def start_generating_preview!
     generating_preview!
@@ -13,11 +69,20 @@ class Pattern < ApplicationRecord
     update!(percentage_converted: 100)
   end
 
+  def height
+    parsed_data.dig(:model, :images, 0, :height)
+  end
+
+  def width
+    parsed_data.dig(:model, :images, 0, :width)
+  end
+
+  def parsed_data
+    JSON.parse(definition, symbolize_names: true)
+  end
+
   def create_preview
     start_generating_preview!
-    parsed_data = JSON.parse(definition, symbolize_names: true)
-    width = parsed_data.dig(:model, :images, 0, :width)
-    height = parsed_data.dig(:model, :images, 0, :height)
     update!(name: parsed_data.dig(:info, :title))
     threads = Pattern.from_fcjson_to_threads(definition)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))

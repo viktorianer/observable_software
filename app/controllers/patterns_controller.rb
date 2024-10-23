@@ -18,4 +18,10 @@ class PatternsController < ApplicationController
     @pattern = Pattern.find(params[:id])
     render partial: "patterns/progress_bar"
   end
+
+  def distort_preview
+    @pattern = Pattern.find(params[:id])
+    @pattern.distort_preview
+    render partial: "patterns/distorted_preview"
+  end
 end
