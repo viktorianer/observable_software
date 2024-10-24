@@ -86,7 +86,7 @@ class Pattern < ApplicationRecord
     update!(name: parsed_data.dig(:info, :title))
     threads = Pattern.from_fcjson_to_threads(definition)
     combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
-    combined_image.resize("#{width * 32}x#{height * 32}")
+    combined_image.resize("#{width * 32}x#{height * 32}!")
 
     pixel_percentage_progress_fraction = 100.0 / (width * height)
     current_pixel_index = 0
