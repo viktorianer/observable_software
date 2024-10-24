@@ -22,6 +22,6 @@ class PatternsController < ApplicationController
   def distort_preview
     @pattern = Pattern.find(params[:id])
     @pattern.distort_preview
-    render partial: "patterns/distorted_preview"
+    render :distorted_preview
   end
 end

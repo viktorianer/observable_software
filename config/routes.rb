@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :patterns, only: [ :create, :show ] do
     member do
       get :update_progress
+      get :distort_preview
     end
   end
   root "patterns#new"
