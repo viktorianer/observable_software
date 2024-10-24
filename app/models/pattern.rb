@@ -104,7 +104,7 @@ class Pattern < ApplicationRecord
           current_pixel_index += 1
           update!(percentage_converted: current_pixel_index * pixel_percentage_progress_fraction)
         else
-          Rails.logger.warn "Thread image not found: #{thread_id}.png"
+          throw "Thread image not found: #{thread_id}.png"
         end
       end
     end
