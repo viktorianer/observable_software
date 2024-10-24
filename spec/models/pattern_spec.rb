@@ -30,10 +30,7 @@ RSpec.describe Pattern, type: :model do
 
   describe "#distort_preview" do
     it "creates a distorted preview image" do
-      fcjson_data = File.read(Rails.root.join("spec/support/the_bends.fcjson"))
-      pattern = Pattern.create!(name: "Example", definition: fcjson_data)
-      pattern.preview.attach(io: File.open(Rails.root.join("spec/support/example_preview.png")), filename: "example_preview.png", content_type: "image/png")
-      pattern.save!
+      pattern = create_the_bends_pattern
 
       pattern.distort_preview
 
@@ -44,5 +41,15 @@ RSpec.describe Pattern, type: :model do
       expect(distorted_preview_image.width).to eq(2000)
       expect(distorted_preview_image.height).to eq(2996)
     end
+  end
+
+  private
+
+  def create_the_bends_pattern
+    fcjson_data = File.read(Rails.root.join("spec/support/the_bends.fcjson"))
+    pattern = Pattern.create!(name: "The Bends", definition: fcjson_data)
+    pattern.preview.attach(io: File.open(Rails.root.join("spec/support/the_bends.png")), filename: "the_bends.png", content_type: "image/png")
+    pattern.save!
+    pattern
   end
 end

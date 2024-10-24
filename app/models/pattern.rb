@@ -139,4 +139,8 @@ class Pattern < ApplicationRecord
       end
     end.each_slice(width).to_a
   end
+
+  def generate_preview
+    CreatePreviewFromPatternJob.perform_later(id)
+  end
 end

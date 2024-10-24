@@ -1,4 +1,4 @@
-class CreatePatternFromFcjsonJob < ApplicationJob
+class CreatePreviewFromPatternJob < ApplicationJob
   queue_as :default
 
   def perform(pattern_id)
