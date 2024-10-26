@@ -103,23 +103,31 @@ class Pattern < ApplicationRecord
     pixel_percentage_progress_fraction = 100.0 / (width * height)
     current_pixel_index = 0
 
+    thread_images = {}
     threads.each_with_index do |row, y|
       row.each_with_index do |thread_id, x|
+        next if thread_id == "blank"
         thread_image_path = Rails.root.join("data", "threads", "#{thread_id}.png")
 
-        if File.exist?(thread_image_path)
-          thread_image = MiniMagick::Image.open(thread_image_path)
-          combined_image = combined_image.composite(thread_image) do |c|
-            c.compose "Over"
-            c.geometry "+#{x*32}+#{y*32}"
-          end
-          current_pixel_index += 1
-          update!(percentage_converted: current_pixel_index * pixel_percentage_progress_fraction)
-        else
-          throw "Thread image not found: #{thread_id}.png"
+        unless File.exist?(thread_image_path)
+          raise "Thread image not found: #{thread_id}.png"
         end
+
+        thread_images[thread_id] ||= MiniMagick::Image.open(thread_image_path)
+
+        combined_image = combined_image.composite(thread_images[thread_id]) do |c|
+          c.compose "Over"
+          c.geometry "+#{x*32}+#{y*32}"
+        end
+
+        current_pixel_index += 1
       end
+
+      update!(percentage_converted: current_pixel_index * pixel_percentage_progress_fraction)
     end
+
+    # Final update to ensure 100%
+    update!(percentage_converted: 100)
 
     temp_file = Tempfile.new([ "preview", ".png" ], "tmp")
     combined_image.write(temp_file.path)
