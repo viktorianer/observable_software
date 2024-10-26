@@ -152,6 +152,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
+    memory_profiler (1.1.0)
     mini_magick (5.0.1)
     mini_mime (1.1.5)
     minitest (5.25.1)
@@ -397,6 +398,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  memory_profiler (~> 1.1)
   mini_magick (~> 5.0)
   propshaft
   puma (>= 5.0)
