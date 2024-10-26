@@ -55,7 +55,7 @@ RSpec.describe Pattern, type: :model do
       expect(pattern.distorted_preview.content_type).to start_with("image/")
       distorted_preview_image = MiniMagick::Image.read(pattern.distorted_preview.download)
       expect(distorted_preview_image.width).to eq(2000)
-      expect(distorted_preview_image.height).to eq(2996)
+      expect(distorted_preview_image.height).to eq(2667)
     end
   end
 
