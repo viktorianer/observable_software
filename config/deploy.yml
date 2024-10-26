@@ -8,10 +8,6 @@ image: synapticmishap/mini_cross_stitching
 servers:
   web:
     - 49.13.150.229
-  labels:
-    traefik.http.routers.maildown-web.rule: Host(`kamal_example.com`)
-    traefik.http.routers.maildown-web.entrypoints: websecure
-    traefik.http.routers.maildown-web.tls.certresolver: letsencrypt
 
   # job:
   #   hosts:
@@ -22,9 +18,9 @@ servers:
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-# proxy:
-  # ssl: true
-  # host: app.synapticmishap.com
+proxy:
+  ssl: true
+  host: app.synapticmishap.co.uk
 
 # Credentials for your image host.
 registry:
@@ -120,20 +116,3 @@ ssh:
 #     port: 6379
 #     directories:
 #       - data:/data
-
-traefik:
-    options:
-      publish:
-        - "443:443"
-      volume:
-        - "/letsencrypt/acme.json:/letsencrypt/acme.json" # To save the configuration file.
-    args:
-      entryPoints.web.address: ":80"
-      entryPoints.websecure.address: ":443"
-      entryPoints.web.http.redirections.entryPoint.to: websecure # We want to force https
-      entryPoints.web.http.redirections.entryPoint.scheme: https
-      entryPoints.web.http.redirections.entrypoint.permanent: true
-      certificatesResolvers.letsencrypt.acme.httpchallenge: true
-      certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint: web # Must match the role in `servers`
-      certificatesResolvers.letsencrypt.acme.email: "kamal_example@gmail.com"
-      certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json" # Must match the path in `volume`
