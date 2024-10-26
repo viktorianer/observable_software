@@ -6,7 +6,6 @@ class Pattern < ApplicationRecord
 
   def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right)
     distorted_preview_image = MiniMagick::Image.read(preview.download)
-    distorted_preview_image.write(Rails.root.join("tmp", "preview.png"))
 
     preview_image = MiniMagick::Image.read(preview.download)
     distorted_preview_image = MiniMagick::Image.create
@@ -158,8 +157,6 @@ class Pattern < ApplicationRecord
       c << "PNG24:#{aida_background.path}"
     end
 
-    aida_background.write(Rails.root.join("tmp", "aida_background.png"))
-
     preview_image_on_aida = aida_background.composite(preview_image) do |c|
       c.compose "Over"
       x_offset = ((40 * 32 - preview_image_width) / 64).floor * 32
@@ -167,14 +164,11 @@ class Pattern < ApplicationRecord
       c.geometry "+#{x_offset}+#{y_offset}"
     end
 
-    preview_image_on_aida.write(Rails.root.join("tmp", "preview_image_on_aida.png"))
-
-    # Save the new image
     temp_file = Tempfile.new([ "preview_image_on_aida", ".png" ], "tmp")
     preview_image_on_aida.write(temp_file.path)
     temp_file.rewind
 
-    preview.attach(io: temp_file, filename: "preview_with_border.png", content_type: "image/png")
+    preview.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
     finish_generating_preview!
     save!
 
