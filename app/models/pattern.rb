@@ -17,7 +17,7 @@ class Pattern < ApplicationRecord
       c << distorted_preview_image.path
     end
 
-    background_image = MiniMagick::Image.open(Rails.root.join("data", "background.png"))
+    background_image = MiniMagick::Image.open(Rails.root.join("data", "backgrounds", "#{BACKGROUND}.png"))
     background_image.composite(distorted_preview_image) do |c|
       c.geometry "+#{offset[0]}+#{offset[1]}"
       c.matte
@@ -26,13 +26,25 @@ class Pattern < ApplicationRecord
     end
   end
 
-  def compose_on_background
-    four_corners = [
+  BACKGROUND_CUTOUT_DIMENSIONS = {
+    nightstand: [
+      [ 1140, 1870 ],
+      [ 1465, 1880 ],
+      [ 1115, 2321 ],
+      [ 1445, 2338 ]
+    ],
+    chest_of_drawers: [
       [ 216, 658 ],
       [ 616, 671 ],
       [ 207, 1180 ],
       [ 600, 1216 ]
     ]
+  }
+
+  BACKGROUND = :nightstand
+
+  def compose_on_background
+    four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(BACKGROUND)
     preview_image = MiniMagick::Image.read(preview.download)
     preview_image_width = preview_image.width
     preview_image_height = preview_image.height
