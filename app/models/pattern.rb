@@ -93,40 +93,48 @@ class Pattern < ApplicationRecord
   end
 
   def create_preview
-    start_generating_preview!
     update!(name: parsed_data.dig(:info, :title))
     threads = Pattern.from_fcjson_to_threads(definition)
-    combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
-    combined_image.resize("#{width * 32}x#{height * 32}!")
 
-    pixel_percentage_progress_fraction = 100.0 / (width * height)
-    current_pixel_index = 0
+    # Create a blank canvas
+    combined_image = MiniMagick::Image.create(".png")
+    # combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
+    # combined_image.resize("#{width * 32}x#{height * 32}!")
 
-    thread_images = {}
-    threads.each_with_index do |row, y|
-      row.each_with_index do |thread_id, x|
-        next if thread_id == "blank"
-        thread_image_path = Rails.root.join("data", "threads", "#{thread_id}.png")
+    # Create a temporary directory to store individual thread tiles
+    # temp_dir = Dir.mktmpdir
 
-        unless File.exist?(thread_image_path)
-          raise "Thread image not found: #{thread_id}.png"
-        end
+    # Generate unique thread tiles
+    # unique_threads = threads.flatten.uniq.reject { |t| t == "blank" }
+    # unique_threads.each do |thread_id|
+    # thread_image_path = Rails.root.join("data", "threads", "#{thread_id}.png")
+    # raise "Thread image not found: #{thread_id}.png" unless File.exist?(thread_image_path)
 
-        thread_images[thread_id] ||= MiniMagick::Image.open(thread_image_path)
+    # Copy the thread image to the temp directory with a numeric name
+    # FileUtils.cp(thread_image_path, File.join(temp_dir, "#{unique_threads.index(thread_id)}.png"))
+    # end
 
-        combined_image = combined_image.composite(thread_images[thread_id]) do |c|
-          c.compose "Over"
-          c.geometry "+#{x*32}+#{y*32}"
-        end
-
-        current_pixel_index += 1
-      end
-
-      update!(percentage_converted: current_pixel_index * pixel_percentage_progress_fraction)
+    # Create a tile map
+    files = threads.flat_map do |row|
+      row.map { |thread_id| Rails.root.join("data", "threads", "#{thread_id}.png").to_s }
     end
 
-    # Final update to ensure 100%
-    update!(percentage_converted: 100)
+    # Write the tile map to a temporary file
+    # tile_map_file = Tempfile.new([ "tile_map", ".txt" ])
+    # tile_map_file.write(tile_map)
+    # binding.break
+
+    # Use ImageMagick's montage command to compose the image
+    MiniMagick::Tool::Montage.new do |montage|
+      files.each do |file|
+        montage << file
+      end
+      montage.tile "#{width}x#{height}"
+      montage.geometry "32x32+0+0"
+      montage.background "none"
+      montage << "-virtual-pixel" << "transparent"
+      montage << combined_image.path
+    end
 
     temp_file = Tempfile.new([ "preview", ".png" ], "tmp")
     combined_image.write(temp_file.path)
@@ -135,6 +143,7 @@ class Pattern < ApplicationRecord
     preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
     save!
 
+    # Clean up
     temp_file.close
     temp_file.unlink
 
@@ -169,7 +178,6 @@ class Pattern < ApplicationRecord
     temp_file.rewind
 
     preview.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
-    finish_generating_preview!
     save!
 
     # temp_file.close
