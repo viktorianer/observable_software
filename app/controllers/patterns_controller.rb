@@ -19,9 +19,9 @@ class PatternsController < ApplicationController
     render partial: "patterns/progress_bar"
   end
 
-  def distort_preview
+  def composed_preview
     @pattern = Pattern.find(params[:id])
-    @pattern.distort_preview
-    render :distorted_preview
+    @pattern.compose_on_background
+    render :composed_preview
   end
 end

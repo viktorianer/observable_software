@@ -17,22 +17,38 @@ RSpec.describe Pattern, type: :model do
     end
   end
 
+  describe "#add_border_to_preview" do
+    it "adds a border to make the pattern 55x40" do
+      fcjson_data = File.read(Rails.root.join("spec/support/example.fcjson"))
+      pattern = Pattern.create(name: "Testing", definition: fcjson_data)
+      pattern.create_preview
+
+      pattern.add_border_to_preview
+
+      expect(pattern.preview).to be_attached
+      expect(pattern.preview.content_type).to start_with("image/")
+      preview_image = MiniMagick::Image.read(pattern.preview.download)
+      expect(preview_image.height).to eq(55 * 32)
+      expect(preview_image.width).to eq(40 * 32)
+    end
+  end
+
   describe ".from_fcjson_to_threads" do
     it "returns an array of arrays of thread ids" do
       fcjson_data = File.read(Rails.root.join("spec/support/example.fcjson"))
       threads = Pattern.from_fcjson_to_threads(fcjson_data)
       expect(threads).to eq([
         [ "01", "307" ],
-        [ "820", "aida" ]
+        [ "820", "blank" ]
       ])
     end
   end
 
-  describe "#distort_preview" do
+  describe "#compose_on_background" do
     it "creates a distorted preview image" do
       pattern = create_the_bends_pattern
 
-      pattern.distort_preview
+      pattern.compose_on_background
 
       pattern.reload
       expect(pattern.distorted_preview).to be_attached

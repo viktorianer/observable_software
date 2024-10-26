@@ -18,28 +18,28 @@ class Pattern < ApplicationRecord
     end
 
     background_image = MiniMagick::Image.open(Rails.root.join("data", "background.png"))
-    composite_image = background_image.composite(distorted_preview_image) do |c|
+    background_image.composite(distorted_preview_image) do |c|
       c.geometry "+#{offset[0]}+#{offset[1]}"
       c.matte
       c.virtual_pixel "transparent"
       c.compose "DstOver"
     end
-    background_image.write(Rails.root.join("tmp", "background.png"))
-    composite_image.write(Rails.root.join("tmp", "composite.png"))
-    composite_image
   end
 
-  def distort_preview
+  def compose_on_background
     four_corners = [
       [ 216, 658 ],
       [ 616, 671 ],
       [ 207, 1180 ],
       [ 600, 1216 ]
     ]
+    preview_image = MiniMagick::Image.read(preview.download)
+    preview_image_width = preview_image.width
+    preview_image_height = preview_image.height
     top_left = [ 0, 0 ]
-    top_right = [ width*32, 0 ]
-    bottom_left = [ 0, height*32 ]
-    bottom_right = [ width*32, height*32 ]
+    top_right = [ preview_image_width, 0 ]
+    bottom_left = [ 0, preview_image_height ]
+    bottom_right = [ preview_image_width, preview_image_height ]
 
     x_offset = four_corners.map { |x, y| x }.min
     y_offset = four_corners.map { |x, y| y }.min
@@ -114,13 +114,53 @@ class Pattern < ApplicationRecord
     temp_file.rewind
 
     preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
-    finish_generating_preview!
     save!
 
     temp_file.close
     temp_file.unlink
 
     self
+  end
+
+  def add_border_to_preview
+    preview_image = MiniMagick::Image.read(preview.download)
+    preview_image_width = preview_image.data.dig("geometry", "width")
+    preview_image_height = preview_image.data.dig("geometry", "height")
+    aida_background = MiniMagick::Image.create(".png")
+
+    aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
+
+    MiniMagick.convert do |c|
+      c.size "#{40 * 32}x#{55 * 32}"
+      c << "tile:#{aida_image.path}"
+      c.colorspace "sRGB"
+      c.type "TrueColor"
+      c << "PNG24:#{aida_background.path}"
+    end
+
+    aida_background.write(Rails.root.join("tmp", "aida_background.png"))
+
+    preview_image_on_aida = aida_background.composite(preview_image) do |c|
+      c.compose "Over"
+      x_offset = ((40 * 32 - preview_image_width) / 64).floor * 32
+      y_offset = ((55 * 32 - preview_image_height) / 64).floor * 32
+      c.geometry "+#{x_offset}+#{y_offset}"
+    end
+
+    preview_image_on_aida.write(Rails.root.join("tmp", "preview_image_on_aida.png"))
+
+    # Save the new image
+    temp_file = Tempfile.new([ "preview_image_on_aida", ".png" ], "tmp")
+    preview_image_on_aida.write(temp_file.path)
+    temp_file.rewind
+
+    preview.attach(io: temp_file, filename: "preview_with_border.png", content_type: "image/png")
+    finish_generating_preview!
+    save!
+
+    # temp_file.close
+    # temp_file.unlink
+    # preview_image.resize("55x40")
   end
 
   def self.from_fcjson_to_threads(fcjson_data)
@@ -130,7 +170,7 @@ class Pattern < ApplicationRecord
 
     crosses.map do |cross|
       if cross == -1
-        "aida"
+        "blank"
       else
         floss_index = parsed_data.dig(:model, :images, 0, :crossIndexes, cross, :fi)
         floss_indices = parsed_data.dig(:model, :images, 0, :flossIndexes)
