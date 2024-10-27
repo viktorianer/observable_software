@@ -22,12 +22,6 @@ class PatternsController < ApplicationController
     render partial: "patterns/progress_bar"
   end
 
-  def composed_preview
-    @pattern = Pattern.find(params[:id])
-    @pattern.compose_on_background
-    render :composed_preview
-  end
-
   def download
     @pattern = Pattern.find(params[:id])
 
