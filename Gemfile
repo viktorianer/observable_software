@@ -69,3 +69,5 @@ gem "rspec-rails", "~> 7.0"
 gem "mini_magick", "~> 5.0"
 
 gem "memory_profiler", "~> 1.1"
+
+gem "rubyzip"

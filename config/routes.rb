@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     member do
       get :update_progress
       get :composed_preview
+      get :download
     end
   end
   root "patterns#new"

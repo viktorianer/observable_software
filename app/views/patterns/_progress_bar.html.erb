@@ -1,5 +1,8 @@
 <div hx-get="<%= update_progress_pattern_path(@pattern) %>" hx-trigger="<%= @pattern.finished_generating_preview? ? '' : 'every 2s' %>" hx-swap="outerHTML">
   <% if @pattern.generating_preview? %>
+    <div class="m-4 text-center">
+      <p class="inline-block px-4 py-2 rounded transition duration-300">Generating images...</p>
+    </div>
     <div class="grid grid-cols-5 gap-4 animate-pulse">
       <% ([:loading] * 5).each do |image| %>
         <%= image_tag "#{image}.png", alt: "Loading...", width: 2000, height: 2666 %>
@@ -8,6 +11,9 @@
   <% elsif @pattern.not_generating_preview? %>
     <p class="text-center mb-6 text-gray-600">Preview generation will start soon...</p>
   <% elsif @pattern.finished_generating_preview? %>
+    <div class="m-4 text-center">
+      <%= link_to "Download Images", download_pattern_path(@pattern), class: "inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300" %>
+    </div>
     <div class="grid grid-cols-5 gap-4">
       <% @pattern.images.each do |image| %>
         <%= image_tag image, alt: "Pattern Preview for #{@pattern.name}", width: 2000, height: 2666 %>
