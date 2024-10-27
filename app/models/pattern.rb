@@ -7,6 +7,48 @@ class Pattern < ApplicationRecord
   has_one_attached :distorted_preview
   has_many_attached :images
 
+  STITCH_WIDTH = 32
+
+  BORDER_SIZE_FOR_BACKGROUND = {
+    in_hand: :small_wide,
+    nightstand: :small,
+    chest_of_drawers: :medium
+  }
+
+  COMPOSE = {
+    in_hand: "Over",
+    nightstand: "DstOver",
+    chest_of_drawers: "DstOver"
+  }
+
+  BACKGROUND_CUTOUT_DIMENSIONS = {
+    in_hand: [
+      [ 600, 810 ],
+      [ 1432, 946 ],
+      [ 432, 1850 ],
+      [ 1262, 1986 ]
+    ],
+    nightstand: [
+      [ 1140, 1870 ],
+      [ 1465, 1880 ],
+      [ 1115, 2321 ],
+      [ 1445, 2338 ]
+    ],
+    chest_of_drawers: [
+      [ 315, 464 ],
+      [ 653, 466 ],
+      [ 310, 955 ],
+      [ 651, 957 ]
+    ]
+  }
+
+  PREVIEW_WITH_BORDER_DIMENSIONS = {
+    small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+    small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+    medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+    large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ]
+  }
+
   enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
 
   def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right, background)
@@ -24,28 +66,9 @@ class Pattern < ApplicationRecord
       c.geometry "+#{offset[0]}+#{offset[1]}"
       c.matte
       c.virtual_pixel "transparent"
-      c.compose "DstOver"
+      c.compose COMPOSE.fetch(background)
     end
   end
-
-  BACKGROUND_CUTOUT_DIMENSIONS = {
-    nightstand: [
-      [ 1140, 1870 ],
-      [ 1465, 1880 ],
-      [ 1115, 2321 ],
-      [ 1445, 2338 ]
-    ],
-    chest_of_drawers: [
-      [ 315, 464 ],
-      [ 653, 466 ],
-      [ 310, 955 ],
-      [ 651, 957 ]
-    ]
-  }
-  BORDER_SIZE_FOR_BACKGROUND = {
-    nightstand: :small,
-    chest_of_drawers: :medium
-  }
 
   def preview_with_border(background:)
     send("preview_with_border_#{BORDER_SIZE_FOR_BACKGROUND.fetch(background)}")
@@ -133,15 +156,6 @@ class Pattern < ApplicationRecord
 
     self
   end
-
-  STITCH_WIDTH = 32
-
-  PREVIEW_WITH_BORDER_DIMENSIONS = {
-    small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-    small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-    medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
-    large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ]
-  }
 
   def add_border_to_preview(size = :small)
     preview_image = MiniMagick::Image.read(preview.download)
