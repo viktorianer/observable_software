@@ -123,7 +123,8 @@ class Pattern < ApplicationRecord
     temp_file = Tempfile.new([ "distorted_preview", ".png" ], "tmp")
     composite_image.write(temp_file.path)
     temp_file.rewind
-    images.attach(io: temp_file, filename: "distorted_preview.png", content_type: "image/png")
+    number_of_images = images.count
+    images.attach(io: temp_file, filename: "#{(number_of_images + 1).to_s.ljust(2, "0")}_preview_image.png", content_type: "image/png")
     save!
     temp_file.close
     temp_file.unlink
