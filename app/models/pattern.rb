@@ -21,6 +21,12 @@ class Pattern < ApplicationRecord
     chest_of_drawers: "DstOver"
   }
 
+  MARGIN = {
+    in_hand: 0,
+    nightstand: 5,
+    chest_of_drawers: 5
+  }
+
   BACKGROUND_CUTOUT_DIMENSIONS = {
     in_hand: [
       [ 600, 810 ],
@@ -87,7 +93,7 @@ class Pattern < ApplicationRecord
     x_offset = four_corners.map { |x, y| x }.min
     y_offset = four_corners.map { |x, y| y }.min
     offset = [ x_offset, y_offset ]
-    margin = 5
+    margin = MARGIN.fetch(background)
     transformed_top_left = [ four_corners[0][0], four_corners[0][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] - margin ] }
     transformed_top_right = [ four_corners[1][0], four_corners[1][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] - margin ] }
     transformed_bottom_left = [ four_corners[2][0], four_corners[2][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] + margin ] }
