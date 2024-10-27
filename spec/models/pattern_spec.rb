@@ -23,13 +23,23 @@ RSpec.describe Pattern, type: :model do
       pattern = Pattern.create(name: "Testing", definition: fcjson_data)
       pattern.create_preview
 
-      pattern.add_border_to_preview
+      pattern.add_border_to_preview(:small)
+      pattern.add_border_to_preview(:medium)
+      pattern.add_border_to_preview(:large)
 
       expect(pattern.preview).to be_attached
-      expect(pattern.preview.content_type).to start_with("image/")
-      preview_image = MiniMagick::Image.read(pattern.preview.download)
+      expect(pattern.preview_with_border_small.content_type).to start_with("image/")
+      preview_image = MiniMagick::Image.read(pattern.preview_with_border_small.download)
       expect(preview_image.height).to eq(55 * 32)
       expect(preview_image.width).to eq(40 * 32)
+      expect(pattern.preview_with_border_medium.content_type).to start_with("image/")
+      preview_image = MiniMagick::Image.read(pattern.preview_with_border_medium.download)
+      expect(preview_image.height).to eq(75 * 32)
+      expect(preview_image.width).to eq(55 * 32)
+      expect(pattern.preview_with_border_large.content_type).to start_with("image/")
+      preview_image = MiniMagick::Image.read(pattern.preview_with_border_large.download)
+      expect(preview_image.height).to eq(100 * 32)
+      expect(preview_image.width).to eq(75 * 32)
     end
   end
 

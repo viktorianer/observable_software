@@ -1,5 +1,8 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
+  has_one_attached :preview_with_border_small
+  has_one_attached :preview_with_border_medium
+  has_one_attached :preview_with_border_large
   has_one_attached :distorted_preview
   has_many_attached :images
 
@@ -40,10 +43,18 @@ class Pattern < ApplicationRecord
       [ 651, 957 ]
     ]
   }
+  BORDER_SIZE_FOR_BACKGROUND = {
+    nightstand: :small,
+    chest_of_drawers: :medium
+  }
+
+  def preview_with_border(background:)
+    send("preview_with_border_#{BORDER_SIZE_FOR_BACKGROUND.fetch(background)}")
+  end
 
   def add_image_for(background)
     four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(background)
-    preview_image = MiniMagick::Image.read(preview.download)
+    preview_image = MiniMagick::Image.read(preview_with_border(background:).download)
     preview_image_width = preview_image.width
     preview_image_height = preview_image.height
     top_left = [ 0, 0 ]
@@ -124,7 +135,13 @@ class Pattern < ApplicationRecord
     self
   end
 
-  def add_border_to_preview
+  PREVIEW_WITH_BORDER_DIMENSIONS = {
+    small: [ 40 * 32, 55 * 32 ],
+    medium: [ 55 * 32, 75 * 32 ],
+    large: [ 75 * 32, 100 * 32 ]
+  }
+
+  def add_border_to_preview(size = :small)
     preview_image = MiniMagick::Image.read(preview.download)
     preview_image_width = preview_image.data.dig("geometry", "width")
     preview_image_height = preview_image.data.dig("geometry", "height")
@@ -132,8 +149,10 @@ class Pattern < ApplicationRecord
 
     aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
 
+    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.fetch(size)
+
     MiniMagick.convert do |c|
-      c.size "#{40 * 32}x#{55 * 32}"
+      c.size "#{width_with_border}x#{height_with_border}"
       c << "tile:#{aida_image.path}"
       c.colorspace "sRGB"
       c.type "TrueColor"
@@ -142,8 +161,8 @@ class Pattern < ApplicationRecord
 
     preview_image_on_aida = aida_background.composite(preview_image) do |c|
       c.compose "Over"
-      x_offset = ((40 * 32 - preview_image_width) / 64).floor * 32
-      y_offset = ((55 * 32 - preview_image_height) / 64).floor * 32
+      x_offset = ((width_with_border - preview_image_width) / 64).floor * 32
+      y_offset = ((height_with_border - preview_image_height) / 64).floor * 32
       c.geometry "+#{x_offset}+#{y_offset}"
     end
 
@@ -151,12 +170,17 @@ class Pattern < ApplicationRecord
     preview_image_on_aida.write(temp_file.path)
     temp_file.rewind
 
-    preview.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
+    if size == :small
+      preview_with_border_small.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
+    elsif size == :medium
+      preview_with_border_medium.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
+    elsif size == :large
+      preview_with_border_large.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
+    end
     save!
 
-    # temp_file.close
-    # temp_file.unlink
-    # preview_image.resize("55x40")
+    temp_file.close
+    temp_file.unlink
   end
 
   def self.from_fcjson_to_threads(fcjson_data)
