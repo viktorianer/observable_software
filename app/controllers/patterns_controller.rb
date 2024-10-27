@@ -7,6 +7,7 @@ class PatternsController < ApplicationController
 
   def create
     pattern = Pattern.create!(name: "Untitled", definition: params[:fcjson].read)
+    pattern.start_generating_preview!
     CreatePreviewFromPatternJob.perform_later(pattern.id)
     redirect_to pattern_path(pattern)
   end
