@@ -34,7 +34,7 @@ class PatternsController < ApplicationController
     if @pattern.finished_generating_preview?
       compressed_filestream = Zip::OutputStream.write_buffer do |zos|
         @pattern.images.each_with_index do |image, index|
-          zos.put_next_entry "#{@pattern.name.parameterize}__#{(index + 1).to_s.ljust(2, "0")}_preview_image.png"
+          zos.put_next_entry "#{(index + 1).to_s.rjust(2, "0")}_#{@pattern.name.parameterize}_preview_image.png"
           zos.print IO.binread(ActiveStorage::Blob.service.path_for(image.key))
         end
       end
