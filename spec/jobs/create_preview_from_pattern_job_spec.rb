@@ -7,7 +7,7 @@ RSpec.describe CreatePreviewFromPatternJob, type: :job do
     CreatePreviewFromPatternJob.perform_now(pattern.id)
 
     expect(pattern.preview).to be_attached
-    expect(pattern.distorted_preview).to be_attached
+    expect(pattern.images.count).to eq(2)
   end
 
   private

@@ -11,6 +11,10 @@
   <% elsif @pattern.not_generating_preview? %>
     <p class="text-center mb-6 text-gray-600">Preview generation will start soon...</p>
   <% elsif @pattern.finished_generating_preview? %>
-    <%= image_tag @pattern.distorted_preview, alt: "Pattern Preview for #{@pattern.name}", class: "max-w-full" %>
+    <div class="grid grid-cols-3 gap-4">
+      <% @pattern.images.each do |image| %>
+        <%= image_tag image, alt: "Pattern Preview for #{@pattern.name}", class: "w-full h-auto" %>
+      <% end %>
+    </div>
   <% end %>
 </div>

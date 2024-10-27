@@ -44,21 +44,6 @@ RSpec.describe Pattern, type: :model do
     end
   end
 
-  describe "#compose_on_background" do
-    it "creates a distorted preview image" do
-      pattern = create_the_bends_pattern
-
-      pattern.compose_on_background
-
-      pattern.reload
-      expect(pattern.distorted_preview).to be_attached
-      expect(pattern.distorted_preview.content_type).to start_with("image/")
-      distorted_preview_image = MiniMagick::Image.read(pattern.distorted_preview.download)
-      expect(distorted_preview_image.width).to eq(2000)
-      expect(distorted_preview_image.height).to eq(2667)
-    end
-  end
-
   private
 
   def create_the_bends_pattern

@@ -6,7 +6,8 @@ class CreatePreviewFromPatternJob < ApplicationJob
     pattern.start_generating_preview!
     pattern.create_preview
     pattern.add_border_to_preview
-    pattern.compose_on_background
+    pattern.add_image_for(:nightstand)
+    pattern.add_image_for(:chest_of_drawers)
     pattern.finish_generating_preview!
   end
 end

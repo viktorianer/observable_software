@@ -1,10 +1,11 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
   has_one_attached :distorted_preview
+  has_many_attached :images
 
   enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
 
-  def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right)
+  def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right, background)
     distorted_preview_image = MiniMagick::Image.read(preview.download)
 
     preview_image = MiniMagick::Image.read(preview.download)
@@ -16,7 +17,7 @@ class Pattern < ApplicationRecord
       c << distorted_preview_image.path
     end
 
-    background_image = MiniMagick::Image.open(Rails.root.join("data", "backgrounds", "#{BACKGROUND}.png"))
+    background_image = MiniMagick::Image.open(Rails.root.join("data", "backgrounds", "#{background}.png"))
     background_image.composite(distorted_preview_image) do |c|
       c.geometry "+#{offset[0]}+#{offset[1]}"
       c.matte
@@ -40,10 +41,8 @@ class Pattern < ApplicationRecord
     ]
   }
 
-  BACKGROUND = :nightstand
-
-  def compose_on_background
-    four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(BACKGROUND)
+  def add_image_for(background)
+    four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(background)
     preview_image = MiniMagick::Image.read(preview.download)
     preview_image_width = preview_image.width
     preview_image_height = preview_image.height
@@ -60,11 +59,11 @@ class Pattern < ApplicationRecord
     transformed_top_right = [ four_corners[1][0], four_corners[1][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] - margin ] }
     transformed_bottom_left = [ four_corners[2][0], four_corners[2][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] + margin ] }
     transformed_bottom_right = [ four_corners[3][0], four_corners[3][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] + margin ] }
-    composite_image = distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right)
+    composite_image = distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right, background)
     temp_file = Tempfile.new([ "distorted_preview", ".png" ], "tmp")
     composite_image.write(temp_file.path)
     temp_file.rewind
-    distorted_preview.attach(io: temp_file, filename: "distorted_preview.png", content_type: "image/png")
+    images.attach(io: temp_file, filename: "distorted_preview.png", content_type: "image/png")
     save!
     temp_file.close
     temp_file.unlink
@@ -95,36 +94,12 @@ class Pattern < ApplicationRecord
   def create_preview
     update!(name: parsed_data.dig(:info, :title))
     threads = Pattern.from_fcjson_to_threads(definition)
-
-    # Create a blank canvas
     combined_image = MiniMagick::Image.create(".png")
-    # combined_image = MiniMagick::Image.open(Rails.root.join("data", "blank.png"))
-    # combined_image.resize("#{width * 32}x#{height * 32}!")
 
-    # Create a temporary directory to store individual thread tiles
-    # temp_dir = Dir.mktmpdir
-
-    # Generate unique thread tiles
-    # unique_threads = threads.flatten.uniq.reject { |t| t == "blank" }
-    # unique_threads.each do |thread_id|
-    # thread_image_path = Rails.root.join("data", "threads", "#{thread_id}.png")
-    # raise "Thread image not found: #{thread_id}.png" unless File.exist?(thread_image_path)
-
-    # Copy the thread image to the temp directory with a numeric name
-    # FileUtils.cp(thread_image_path, File.join(temp_dir, "#{unique_threads.index(thread_id)}.png"))
-    # end
-
-    # Create a tile map
     files = threads.flat_map do |row|
       row.map { |thread_id| Rails.root.join("data", "threads", "#{thread_id}.png").to_s }
     end
 
-    # Write the tile map to a temporary file
-    # tile_map_file = Tempfile.new([ "tile_map", ".txt" ])
-    # tile_map_file.write(tile_map)
-    # binding.break
-
-    # Use ImageMagick's montage command to compose the image
     MiniMagick::Tool::Montage.new do |montage|
       files.each do |file|
         montage << file
@@ -143,7 +118,6 @@ class Pattern < ApplicationRecord
     preview.attach(io: temp_file, filename: "preview.png", content_type: "image/png")
     save!
 
-    # Clean up
     temp_file.close
     temp_file.unlink
 
