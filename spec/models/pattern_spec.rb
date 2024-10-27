@@ -24,22 +24,14 @@ RSpec.describe Pattern, type: :model do
       pattern.create_preview
 
       pattern.add_border_to_preview(:small)
+      pattern.add_border_to_preview(:small_wide)
       pattern.add_border_to_preview(:medium)
       pattern.add_border_to_preview(:large)
 
-      expect(pattern.preview).to be_attached
-      expect(pattern.preview_with_border_small.content_type).to start_with("image/")
-      preview_image = MiniMagick::Image.read(pattern.preview_with_border_small.download)
-      expect(preview_image.height).to eq(55 * 32)
-      expect(preview_image.width).to eq(40 * 32)
-      expect(pattern.preview_with_border_medium.content_type).to start_with("image/")
-      preview_image = MiniMagick::Image.read(pattern.preview_with_border_medium.download)
-      expect(preview_image.height).to eq(75 * 32)
-      expect(preview_image.width).to eq(55 * 32)
-      expect(pattern.preview_with_border_large.content_type).to start_with("image/")
-      preview_image = MiniMagick::Image.read(pattern.preview_with_border_large.download)
-      expect(preview_image.height).to eq(100 * 32)
-      expect(preview_image.width).to eq(75 * 32)
+      expect_pattern_to_have_image(pattern:, width: 40 * 32, height: 55 * 32, size: :small)
+      expect_pattern_to_have_image(pattern:, width: 46 * 32, height: 55 * 32, size: :small_wide)
+      expect_pattern_to_have_image(pattern:, width: 55 * 32, height: 75 * 32, size: :medium)
+      expect_pattern_to_have_image(pattern:, width: 75 * 32, height: 100 * 32, size: :large)
     end
   end
 
@@ -62,5 +54,13 @@ RSpec.describe Pattern, type: :model do
     pattern.preview.attach(io: File.open(Rails.root.join("spec/support/the_bends.png")), filename: "the_bends.png", content_type: "image/png")
     pattern.save!
     pattern
+  end
+
+  def expect_pattern_to_have_image(pattern:, size:, width:, height:)
+    preview = pattern.send("preview_with_border_#{size}")
+    expect(preview.content_type).to start_with("image/")
+    preview_image = MiniMagick::Image.read(preview.download)
+    expect(preview_image.width).to eq(width)
+    expect(preview_image.height).to eq(height)
   end
 end

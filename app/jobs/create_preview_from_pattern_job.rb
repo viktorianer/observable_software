@@ -6,6 +6,7 @@ class CreatePreviewFromPatternJob < ApplicationJob
     pattern.start_generating_preview!
     pattern.create_preview
     pattern.add_border_to_preview(:small)
+    pattern.add_border_to_preview(:small_wide)
     pattern.add_border_to_preview(:medium)
     pattern.add_border_to_preview(:large)
     pattern.add_image_for(:nightstand)

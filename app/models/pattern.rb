@@ -1,6 +1,7 @@
 class Pattern < ApplicationRecord
   has_one_attached :preview
   has_one_attached :preview_with_border_small
+  has_one_attached :preview_with_border_small_wide
   has_one_attached :preview_with_border_medium
   has_one_attached :preview_with_border_large
   has_one_attached :distorted_preview
@@ -9,12 +10,10 @@ class Pattern < ApplicationRecord
   enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
 
   def distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right, background)
-    distorted_preview_image = MiniMagick::Image.read(preview.download)
-
-    preview_image = MiniMagick::Image.read(preview.download)
+    preview_image_with_border = MiniMagick::Image.read(preview_with_border(background:).download)
     distorted_preview_image = MiniMagick::Image.create
     MiniMagick.convert do |c|
-      c << preview_image.path
+      c << preview_image_with_border.path
       c.virtual_pixel "transparent"
       c.distort("Perspective", "#{top_left.map(&:to_s).join(',')},#{transformed_top_left.join(',')} #{top_right.join(',')},#{transformed_top_right.join(',')} #{bottom_left.join(',')},#{transformed_bottom_left.join(',')} #{bottom_right.join(',')},#{transformed_bottom_right.join(',')}")
       c << distorted_preview_image.path
@@ -116,7 +115,7 @@ class Pattern < ApplicationRecord
         montage << file
       end
       montage.tile "#{width}x#{height}"
-      montage.geometry "32x32+0+0"
+      montage.geometry "#{STITCH_WIDTH}x#{STITCH_WIDTH}+0+0"
       montage.background "none"
       montage << "-virtual-pixel" << "transparent"
       montage << combined_image.path
@@ -135,10 +134,13 @@ class Pattern < ApplicationRecord
     self
   end
 
+  STITCH_WIDTH = 32
+
   PREVIEW_WITH_BORDER_DIMENSIONS = {
-    small: [ 40 * 32, 55 * 32 ],
-    medium: [ 55 * 32, 75 * 32 ],
-    large: [ 75 * 32, 100 * 32 ]
+    small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+    small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+    medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+    large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ]
   }
 
   def add_border_to_preview(size = :small)
@@ -161,8 +163,8 @@ class Pattern < ApplicationRecord
 
     preview_image_on_aida = aida_background.composite(preview_image) do |c|
       c.compose "Over"
-      x_offset = ((width_with_border - preview_image_width) / 64).floor * 32
-      y_offset = ((height_with_border - preview_image_height) / 64).floor * 32
+      x_offset = ((width_with_border - preview_image_width) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
+      y_offset = ((height_with_border - preview_image_height) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
       c.geometry "+#{x_offset}+#{y_offset}"
     end
 
@@ -170,13 +172,7 @@ class Pattern < ApplicationRecord
     preview_image_on_aida.write(temp_file.path)
     temp_file.rewind
 
-    if size == :small
-      preview_with_border_small.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
-    elsif size == :medium
-      preview_with_border_medium.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
-    elsif size == :large
-      preview_with_border_large.attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
-    end
+    send("preview_with_border_#{size}").attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
     save!
 
     temp_file.close
