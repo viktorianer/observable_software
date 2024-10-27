@@ -3,6 +3,7 @@ class Pattern < ApplicationRecord
   has_one_attached :preview_with_border_small
   has_one_attached :preview_with_border_small_wide
   has_one_attached :preview_with_border_medium
+  has_one_attached :preview_with_border_medium_large
   has_one_attached :preview_with_border_large
   has_one_attached :distorted_preview
   has_many_attached :images
@@ -12,19 +13,25 @@ class Pattern < ApplicationRecord
   BORDER_SIZE_FOR_BACKGROUND = {
     in_hand: :small_wide,
     nightstand: :small,
-    chest_of_drawers: :medium
+    chest_of_drawers: :medium,
+    close_up: :medium_large,
+    green_wall_with_stool: :medium
   }
 
   COMPOSE = {
     in_hand: "Over",
     nightstand: "DstOver",
-    chest_of_drawers: "DstOver"
+    chest_of_drawers: "DstOver",
+    close_up: "Over",
+    green_wall_with_stool: "DstOver"
   }
 
   MARGIN = {
     in_hand: 0,
     nightstand: 5,
-    chest_of_drawers: 5
+    chest_of_drawers: 5,
+    close_up: 0,
+    green_wall_with_stool: 5
   }
 
   BACKGROUND_CUTOUT_DIMENSIONS = {
@@ -33,6 +40,12 @@ class Pattern < ApplicationRecord
       [ 1432, 946 ],
       [ 432, 1850 ],
       [ 1262, 1986 ]
+    ],
+    green_wall_with_stool: [
+      [ 870, 1157 ],
+      [ 1132, 1157 ],
+      [ 870, 1518 ],
+      [ 1132, 1518 ]
     ],
     nightstand: [
       [ 1140, 1870 ],
@@ -45,6 +58,12 @@ class Pattern < ApplicationRecord
       [ 653, 466 ],
       [ 310, 955 ],
       [ 651, 957 ]
+    ],
+    close_up: [
+      [ 0, 0 ],
+      [ 2000, 0 ],
+      [ 0, 2666 ],
+      [ 2000, 2666 ]
     ]
   }
 
@@ -52,6 +71,7 @@ class Pattern < ApplicationRecord
     small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
     small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
     medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+    medium_large: [ 65 * STITCH_WIDTH, 87 * STITCH_WIDTH ],
     large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ]
   }
 
@@ -99,6 +119,7 @@ class Pattern < ApplicationRecord
     transformed_bottom_left = [ four_corners[2][0], four_corners[2][1] ].then { |x, y| [ x - offset[0] - margin, y - offset[1] + margin ] }
     transformed_bottom_right = [ four_corners[3][0], four_corners[3][1] ].then { |x, y| [ x - offset[0] + margin, y - offset[1] + margin ] }
     composite_image = distort(offset, top_left, transformed_top_left, top_right, transformed_top_right, bottom_left, transformed_bottom_left, bottom_right, transformed_bottom_right, background)
+    composite_image.write(Rails.root.join("tmp", "composite_image_#{background}.png"))
     temp_file = Tempfile.new([ "distorted_preview", ".png" ], "tmp")
     composite_image.write(temp_file.path)
     temp_file.rewind
