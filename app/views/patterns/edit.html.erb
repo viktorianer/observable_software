@@ -1,0 +1,32 @@
+<div class="flex flex-col items-center gap-3">
+  <h1 class="text-3xl font-bold text-center m-3 text-gray-800">Edit Pattern</h1>
+
+  <%= form_with(model: @pattern, local: true, class: "max-w-lg mx-auto flex flex-col gap-3") do |form| %>
+    <div class="mb-4">
+      <%= form.label :name, class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <%= form.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-2 text-sm font-medium text-gray-900">Orientation</label>
+      <div class="space-y-2">
+        <div>
+          <%= form.radio_button :orientation, 'landscape', class: "mr-2" %>
+          <%= form.label :orientation_landscape, 'Landscape', class: "text-sm text-gray-700" %>
+        </div>
+        <div>
+          <%= form.radio_button :orientation, 'square', class: "mr-2" %>
+          <%= form.label :orientation_square, 'Square', class: "text-sm text-gray-700" %>
+        </div>
+        <div>
+          <%= form.radio_button :orientation, 'portrait', class: "mr-2" %>
+          <%= form.label :orientation_portrait, 'Portrait', class: "text-sm text-gray-700" %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <%= form.submit "Update Pattern", class: "inline-block px-4 py-2 my-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300" %>
+    </div>
+  <% end %>
+</div> 

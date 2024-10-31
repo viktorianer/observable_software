@@ -8,6 +8,8 @@ class Pattern < ApplicationRecord
   has_one_attached :distorted_preview
   has_many_attached :images
 
+  enum :orientation, { portrait: "portrait", landscape: "landscape", square: "square" }
+
   STITCH_WIDTH = 32
 
   BORDER_SIZE_FOR_BACKGROUND = {
@@ -152,8 +154,29 @@ class Pattern < ApplicationRecord
     JSON.parse(definition, symbolize_names: true)
   end
 
-  def create_preview
+  def update_name_from_fcjson!
     update!(name: parsed_data.dig(:info, :title))
+  end
+
+  def guess_orientation!
+    update!(orientation: determine_orientation)
+  end
+
+  def determine_orientation
+    if width_and_height_are_close_to_square?
+      :square
+    elsif width > height
+      :landscape
+    else
+      :portrait
+    end
+  end
+
+  def width_and_height_are_close_to_square?
+    (width - height).abs.to_f / [ width, height ].max <= 0.05
+  end
+
+  def create_preview
     threads = Pattern.from_fcjson_to_threads(definition)
     combined_image = MiniMagick::Image.create(".png")
 

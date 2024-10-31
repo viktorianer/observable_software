@@ -6,10 +6,23 @@ class PatternsController < ApplicationController
   end
 
   def create
-    pattern = Pattern.create!(name: "Untitled", definition: params[:fcjson].read)
-    pattern.start_generating_preview!
-    CreatePreviewFromPatternJob.perform_later(pattern.id)
-    redirect_to pattern_path(pattern)
+    pattern = Pattern.create!(definition: params[:fcjson].read)
+    pattern.update_name_from_fcjson!
+    pattern.guess_orientation!
+    redirect_to edit_pattern_path(pattern)
+  end
+
+  def edit
+    @pattern = Pattern.find(params[:id])
+  end
+
+  def update
+    @pattern = Pattern.find(params[:id])
+    @pattern.update!(pattern_params)
+    @pattern.start_generating_preview!
+    CreatePreviewFromPatternJob.perform_later(@pattern.id)
+
+    redirect_to pattern_path(@pattern), notice: "Creating preview..."
   end
 
   def show
@@ -38,6 +51,28 @@ class PatternsController < ApplicationController
     else
       flash[:alert] = "Preview generation is not yet complete."
       redirect_to pattern_path(@pattern)
+    end
+  end
+
+  private
+
+  def pattern_params
+    params.require(:pattern).permit(:name, :orientation)
+  end
+
+  def calculate_dimensions(fcjson_data)
+    width = fcjson_data["width"]
+    height = fcjson_data["height"]
+    { width: width, height: height }
+  end
+
+  def determine_orientation(dimensions)
+    if dimensions[:width] == dimensions[:height]
+      "square"
+    elsif dimensions[:width] > dimensions[:height]
+      "landscape"
+    else
+      "portrait"
     end
   end
 end
