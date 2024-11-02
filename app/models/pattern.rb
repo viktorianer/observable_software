@@ -3,8 +3,10 @@ class Pattern < ApplicationRecord
   has_one_attached :preview_with_border_small
   has_one_attached :preview_with_border_small_wide
   has_one_attached :preview_with_border_medium
+  has_one_attached :preview_with_border_medium_tall
   has_one_attached :preview_with_border_medium_large
   has_one_attached :preview_with_border_large
+  has_one_attached :preview_with_border_large_tall
   has_one_attached :distorted_preview
   has_many_attached :images
 
@@ -13,11 +15,20 @@ class Pattern < ApplicationRecord
   STITCH_WIDTH = 32
 
   BORDER_SIZE_FOR_BACKGROUND = {
-    in_hand: :small_wide,
-    nightstand: :small,
-    chest_of_drawers: :medium,
-    close_up: :medium_large,
-    green_wall_with_stool: :medium
+    portrait: {
+      in_hand: :small_wide,
+      nightstand: :small,
+      chest_of_drawers: :medium,
+      close_up: :medium_large,
+      green_wall_with_stool: :small
+    },
+    square: {
+      in_hand: :small,
+      nightstand: :small,
+      chest_of_drawers: :medium_tall,
+      close_up: :large_tall,
+      green_wall_with_stool: :medium
+    }
   }
 
   COMPOSE = {
@@ -37,44 +48,91 @@ class Pattern < ApplicationRecord
   }
 
   BACKGROUND_CUTOUT_DIMENSIONS = {
-    in_hand: [
-      [ 600, 810 ],
-      [ 1432, 946 ],
-      [ 432, 1850 ],
-      [ 1262, 1986 ]
-    ],
-    green_wall_with_stool: [
-      [ 870, 1157 ],
-      [ 1132, 1157 ],
-      [ 870, 1518 ],
-      [ 1132, 1518 ]
-    ],
-    nightstand: [
-      [ 1140, 1870 ],
-      [ 1465, 1880 ],
-      [ 1115, 2321 ],
-      [ 1445, 2338 ]
-    ],
-    chest_of_drawers: [
-      [ 315, 464 ],
-      [ 653, 466 ],
-      [ 310, 955 ],
-      [ 651, 957 ]
-    ],
-    close_up: [
-      [ 0, 0 ],
-      [ 2000, 0 ],
-      [ 0, 2666 ],
-      [ 2000, 2666 ]
-    ]
+    portrait: {
+      in_hand: [
+        [ 600, 810 ],
+        [ 1432, 946 ],
+        [ 432, 1850 ],
+        [ 1262, 1986 ]
+      ],
+      green_wall_with_stool: [
+        [ 870, 1157 ],
+        [ 1132, 1157 ],
+        [ 870, 1518 ],
+        [ 1132, 1518 ]
+      ],
+      nightstand: [
+        [ 1140, 1870 ],
+        [ 1465, 1880 ],
+        [ 1115, 2321 ],
+        [ 1445, 2338 ]
+      ],
+      chest_of_drawers: [
+        [ 315, 464 ],
+        [ 653, 466 ],
+        [ 310, 955 ],
+        [ 651, 957 ]
+      ],
+      close_up: [
+        [ 0, 0 ],
+        [ 2000, 0 ],
+        [ 0, 2666 ],
+        [ 2000, 2666 ]
+      ]
+    },
+    square: {
+      in_hand: [
+        [ 521, 835 ],
+        [ 1505, 995 ],
+        [ 366, 1800 ],
+        [ 1351, 1958 ]
+      ],
+      green_wall_with_stool: [
+        [ 920, 1157 ],
+        [ 1280, 1157 ],
+        [ 920, 1518 ],
+        [ 1280, 1518 ]
+      ],
+      nightstand: [
+        [ 1078, 1865 ],
+        [ 1517, 1875 ],
+        [ 1054, 2320 ],
+        [ 1500, 2340 ]
+      ],
+      chest_of_drawers: [
+        [ 315, 464 ],
+        [ 653, 466 ],
+        [ 310, 955 ],
+        [ 651, 957 ]
+      ],
+      close_up: [
+        [ 0, 0 ],
+        [ 2000, 0 ],
+        [ 0, 2666 ],
+        [ 2000, 2666 ]
+      ]
+    }
   }
 
   PREVIEW_WITH_BORDER_DIMENSIONS = {
-    small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-    small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-    medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
-    medium_large: [ 65 * STITCH_WIDTH, 87 * STITCH_WIDTH ],
-    large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ]
+    portrait: {
+      small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+      medium_large: [ 65 * STITCH_WIDTH, 87 * STITCH_WIDTH ],
+      medium_tall: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+      large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ],
+      large_tall: [ 65 * STITCH_WIDTH, 85 * STITCH_WIDTH ]
+    },
+    square: {
+      small: [ 43 * STITCH_WIDTH, 43 * STITCH_WIDTH ],
+      small_wide: [ 55 * STITCH_WIDTH, 43 * STITCH_WIDTH ],
+      medium: [ 55 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      medium_large: [ 65 * STITCH_WIDTH, 65 * STITCH_WIDTH ],
+      medium_tall: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+      large: [ 75 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+      large_tall: [ 65 * STITCH_WIDTH, 85 * STITCH_WIDTH ]
+    }
   }
 
   enum :preview_status, { not_generating_preview: "not_generating_preview", generating_preview: "generating_preview", finished_generating_preview: "finished_generating_preview" }
@@ -89,8 +147,7 @@ class Pattern < ApplicationRecord
       c << distorted_preview_image.path
     end
 
-    background_image = MiniMagick::Image.open(Rails.root.join("data", "backgrounds", "#{background}.png"))
-    background_image.composite(distorted_preview_image) do |c|
+    background_image(background).composite(distorted_preview_image) do |c|
       c.geometry "+#{offset[0]}+#{offset[1]}"
       c.matte
       c.virtual_pixel "transparent"
@@ -98,12 +155,19 @@ class Pattern < ApplicationRecord
     end
   end
 
+  def background_image(background)
+    orientation_specific_path = Rails.root.join("data", "backgrounds", orientation.to_s, "#{background}.png")
+    default_path = Rails.root.join("data", "backgrounds", "#{background}.png")
+    path = File.exist?(orientation_specific_path) ? orientation_specific_path : default_path
+    MiniMagick::Image.open(path)
+  end
+
   def preview_with_border(background:)
-    send("preview_with_border_#{BORDER_SIZE_FOR_BACKGROUND.fetch(background)}")
+    send("preview_with_border_#{BORDER_SIZE_FOR_BACKGROUND.fetch(orientation.to_sym).fetch(background)}")
   end
 
   def add_image_for(background)
-    four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(background)
+    four_corners = BACKGROUND_CUTOUT_DIMENSIONS.fetch(orientation.to_sym).fetch(background)
     preview_image = MiniMagick::Image.read(preview_with_border(background:).download)
     preview_image_width = preview_image.width
     preview_image_height = preview_image.height
@@ -213,11 +277,8 @@ class Pattern < ApplicationRecord
     preview_image_width = preview_image.data.dig("geometry", "width")
     preview_image_height = preview_image.data.dig("geometry", "height")
     aida_background = MiniMagick::Image.create(".png")
-
     aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
-
-    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.fetch(size)
-
+    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.fetch(orientation.to_sym).fetch(size)
     MiniMagick.convert do |c|
       c.size "#{width_with_border}x#{height_with_border}"
       c << "tile:#{aida_image.path}"
@@ -225,21 +286,17 @@ class Pattern < ApplicationRecord
       c.type "TrueColor"
       c << "PNG24:#{aida_background.path}"
     end
-
     preview_image_on_aida = aida_background.composite(preview_image) do |c|
       c.compose "Over"
       x_offset = ((width_with_border - preview_image_width) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
       y_offset = ((height_with_border - preview_image_height) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
       c.geometry "+#{x_offset}+#{y_offset}"
     end
-
     temp_file = Tempfile.new([ "preview_image_on_aida", ".png" ], "tmp")
     preview_image_on_aida.write(temp_file.path)
     temp_file.rewind
-
     send("preview_with_border_#{size}").attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
     save!
-
     temp_file.close
     temp_file.unlink
   end

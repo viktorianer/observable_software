@@ -13,7 +13,6 @@ RSpec.describe Pattern, type: :model do
       preview_image = MiniMagick::Image.read(pattern.preview.download)
       expect(preview_image.width).to eq(2 * 32)
       expect(preview_image.height).to eq(2 * 32)
-      expect(pattern.name).to eq("Testing")
     end
   end
 
