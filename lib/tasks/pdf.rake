@@ -7,7 +7,7 @@ namespace :pdf do
   task download: :environment do
     browser_options = {
       browser_path: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-      headless: false,
+      headless: true,
       timeout: 20,
       window_size: [ 1200, 800 ],
       save_path: Rails.root.join("data/downloads"),
