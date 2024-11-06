@@ -6,7 +6,7 @@ namespace :pdf do
   desc "Download a PDF from FlossCross"
   task download: :environment do
     browser_options = {
-      browser_path: Rails.env.production? ? "/usr/bin/google-chrome" : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      browser_path: Rails.env.local? ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : "/usr/bin/google-chrome-stable",
       headless: true,
       timeout: 20,
       window_size: [ 1200, 800 ],
