@@ -32,7 +32,10 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     wget \
     libvulkan1 \
+    dbus \
     && rm -rf /var/lib/apt/lists/*
+
+RUN systemctl enable dbus
 
 # Download and install Google Chrome
 RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o google-chrome.deb \
