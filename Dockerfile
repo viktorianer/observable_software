@@ -32,7 +32,14 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     wget \
     firefox-esr \
+    gnupg \
+    wget \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
+RUN rm google-chrome-stable_current_amd64.deb
 
 # Install base packages
 RUN apt-get update -qq && \
