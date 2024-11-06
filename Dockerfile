@@ -31,17 +31,8 @@ RUN apt-get update && apt-get install -y \
     libxrandr2 \
     xdg-utils \
     wget \
-    libvulkan1 \
-    dbus \
+    firefox-esr \
     && rm -rf /var/lib/apt/lists/*
-
-RUN systemctl enable dbus
-
-# Download and install Google Chrome
-RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o google-chrome.deb \
-    && dpkg -i google-chrome.deb \
-    && apt-get install -f -y \
-    && rm google-chrome.deb
 
 # Install base packages
 RUN apt-get update -qq && \
