@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y \
     firefox-esr \
     gnupg \
     wget \
+    libvulkan1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
