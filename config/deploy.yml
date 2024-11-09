@@ -98,7 +98,7 @@ accessories:
   chrome:
     image: ghcr.io/browserless/chromium
     service: chrome-accessory
-    port: "127.0.0.1:9222:9222"
+    port: "0.0.0.0:9222:9222"
     host: 49.13.150.229
 #   db:
 #     image: mysql:8.0
