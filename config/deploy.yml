@@ -98,7 +98,7 @@ accessories:
   chrome:
     image: ghcr.io/browserless/chromium
     service: chrome-accessory
-    port: "127.0.0.1:9222:9222"
+    port: "127.0.0.1:9222:3000"
     roles:
       - web
     env:
