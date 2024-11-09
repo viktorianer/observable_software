@@ -100,6 +100,11 @@ accessories:
     service: chrome-accessory
     port: "0.0.0.0:9222:9222"
     host: 49.13.150.229
+    env:
+      clear:
+        MAX_CONCURRENT_SESSIONS: 10
+        CONNECTION_TIMEOUT: 30000
+        KEEP_ALIVE: true
 #   db:
 #     image: mysql:8.0
 #     host: 192.168.0.2
