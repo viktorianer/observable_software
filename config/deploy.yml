@@ -106,6 +106,8 @@ accessories:
         MAX_CONCURRENT_SESSIONS: 10
         CONNECTION_TIMEOUT: 30000
         KEEP_ALIVE: true
+    directories:
+      - data/uploads:/rails/storage/uploads
 #   db:
 #     image: mysql:8.0
 #     host: 192.168.0.2

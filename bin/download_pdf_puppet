@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+
+const puppeteer = require('puppeteer');
+const path = require('path');
+
+async function downloadPDF() {
+  let browser;
+  try {
+    const browserOptions = {
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      defaultViewport: { width: 1200, height: 800 }
+    };
+
+    // Use browserless if configured
+    if (process.env.USE_BROWSERLESS) {
+      browserOptions.browserWSEndpoint = process.env.BROWSERLESS_URL || 'ws://chrome-accessory:3000';
+    } else {
+      browserOptions.executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    }
+
+    browser = await puppeteer.launch(browserOptions);
+    const page = await browser.newPage();
+
+    // Configure downloads
+    const downloadPath = '/rails/storage/downloads';
+    await page._client.send('Page.setDownloadBehavior', {
+      behavior: 'allow',
+      downloadPath: downloadPath
+    });
+
+    // Navigate to the designer page
+    await page.goto('https://flosscross.com/designer/');
+    console.log('Navigated to https://flosscross.com/designer/');
+
+    const fileInput = await page.waitForSelector('input[type="file"]');
+    await fileInput.uploadFile('/rails/storage/uploads/Puffin.json');
+    await page.waitForNetworkIdle();
+
+    // Take screenshot
+    await page.screenshot({ path: 'tmp/screenshot.png' });
+    console.log('Saved screenshot to: tmp/screenshot.png');
+
+    await page.waitForTimeout(2000);
+
+    // Navigate to PDF page
+    await page.goto('https://flosscross.com/designer/slot/1/pdf');
+    await page.waitForNetworkIdle();
+    await page.waitForTimeout(2000);
+
+    // Wait for and click Save To PDF button
+    while (true) {
+      const saveButton = await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const saveButton = buttons.find(button => button.textContent.trim() === 'Save To PDF');
+        return saveButton ? true : false;
+      });
+      
+      if (saveButton) {
+        await page.click('button:has-text("Save To PDF")');
+        break;
+      }
+      console.log('Waiting for Save To PDF button...');
+      await page.waitForTimeout(1000);
+    }
+
+    // Wait for and click OK button
+    while (true) {
+      const okButton = await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('.q-btn__content'));
+        const okButton = buttons.find(button => button.textContent.trim() === 'OK');
+        return okButton ? true : false;
+      });
+      
+      if (okButton) {
+        await page.click('.q-btn__content:has-text("OK")');
+        break;
+      }
+      console.log('Waiting for OK button...');
+      await page.waitForTimeout(1000);
+    }
+
+    // Wait for download to complete
+    await page.waitForTimeout(2000);
+
+    console.log(`Downloaded file to: ${downloadPath}`);
+
+  } catch (error) {
+    console.error('Error:', error.message);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+}
+
+downloadPDF(); 

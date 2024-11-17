@@ -5,41 +5,66 @@ require 'ferrum'
 require 'pathname'
 
 browser_options = {
-  browser_path: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  headless: false, # Run in visible mode
+  browser_path: ENV["USE_BROWSERLESS"] ? nil : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  ws_url: ENV["USE_BROWSERLESS"] ? (ENV["BROWSERLESS_URL"] || "http://chrome-accessory:3000") : nil,
+  headless: true,
   timeout: 20,     # Increase timeout to 20 seconds
   window_size: [1200, 800],
-  save_path: "/Users/johngallagher/script_downloads",
+  save_path: "/rails/storage/downloads",
+  ignore_default_args: ["--disable-web-security", "--disable-features=IsolateOrigins,site-per-process"],
   browser_options: {
-    "download.default_directory" => "/Users/johngallagher/script_downloads",
+    "download.default_directory" => "/rails/storage/downloads", 
     "download.prompt_for_download" => false,
   }
-}
+}.compact
 
 browser = Ferrum::Browser.new(browser_options)
 
 begin
   browser.goto('https://flosscross.com/designer/')
+  puts "Navigated to https://flosscross.com/designer/"
   
   browser.network.wait_for_idle
-  sleep 2
+  puts "Network is idle"
 
   file_input = browser.css('input[type="file"]').first
   raise "Could not find file input" unless file_input
   
-  file_input.select_file("/Users/johngallagher/Downloads/Puffins.fcjson")
-  sleep 2
-  
-  browser.goto('https://flosscross.com/designer/slot/1/pdf')
+
+  file_input.select_file("data/uploads/Puffins.fcjson")
+  puts "Selected file"
   browser.network.wait_for_idle
+  puts "Network is idle"
+  # puts "Taking screenshot"
+  # browser.screenshot(path: "tmp/screenshot.png")
+  # puts "Saved screenshot to: tmp/screenshot.png"
+
+  
+  puts "Navigating to https://flosscross.com/designer/slot/1/pdf"
+  browser.goto('https://flosscross.com/designer/slot/1/pdf')
+  puts "Navigated to https://flosscross.com/designer/slot/1/pdf"
+  browser.network.wait_for_idle
+  puts "Network is idle"
+  browser.screenshot(path: "tmp/screenshot_1.png")
+  puts "Saved screenshot to: tmp/screenshot_1.png"
   sleep 2
   
   save_button = browser.css('button').find { |button| button.text.strip == 'Save To PDF' }
-  raise "Could not find Save to PDF button" unless save_button
+  loop do
+    save_button = browser.css('button').find { |button| button.text.strip == 'Save To PDF' }
+    break if save_button
+    sleep 1
+    puts "Waiting for Save To PDF button..."
+  end
   save_button.click
   
-  ok_button = browser.css('.q-btn__content').find { |button| button.text.strip == "OK" }
-  raise "Could not find OK button" unless ok_button
+  ok_button = nil
+  loop do
+    ok_button = browser.css('.q-btn__content').find { |button| button.text.strip == "OK" }
+    break if ok_button
+    sleep 1
+    puts "Waiting for OK button..."
+  end
   ok_button.click
   
   sleep 2

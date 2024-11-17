@@ -1,0 +1,13 @@
+{
+  "name": "mini_cross_stitching",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:johngallagher/mini_cross_stitching.git",
+  "author": "John Gallagher <john@synapticmishap.co.uk>",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.9.0"
+  },
+  "scripts": {}
+}

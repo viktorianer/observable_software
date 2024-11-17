@@ -158,6 +158,10 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     memory_profiler (1.1.0)
+    mime-types (3.6.0)
+      logger
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2024.1105)
     mini_magick (5.0.1)
     mini_mime (1.1.5)
     minitest (5.25.1)
@@ -194,6 +198,9 @@ GEM
     parser (3.3.5.0)
       ast (~> 2.4.1)
       racc
+    playwright-ruby-client (1.48.0)
+      concurrent-ruby (>= 1.1.6)
+      mime-types (>= 3.0)
     propshaft (1.1.0)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
@@ -406,6 +413,7 @@ DEPENDENCIES
   kamal
   memory_profiler (~> 1.1)
   mini_magick (~> 5.0)
+  playwright-ruby-client (~> 1.48)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.0.rc1)

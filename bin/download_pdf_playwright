@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+const { chromium } = require('playwright');
+const path = require('path');
+
+async function downloadPdf() {
+  const browserOptions = {
+    headless: true,
+    args: ['--window-size=1200,800']
+  };
+
+  // Use browserless if configured
+  if (process.env.USE_BROWSERLESS) {
+    browserOptions.wsEndpoint = process.env.BROWSERLESS_URL || 'ws://chrome-accessory:3000';
+  }
+
+  const browser = await chromium.connect(browserOptions);
+  const context = await browser.newContext({
+    acceptDownloads: true,
+    viewport: { width: 1200, height: 800 }
+  });
+
+  try {
+    const page = await context.newPage();
+    
+    console.log('Navigating to https://flosscross.com/designer/');
+    await page.goto('https://flosscross.com/designer/');
+    await page.waitForLoadState('networkidle');
+    console.log('Network is idle');
+
+    // Find and use the file input
+    const fileInput = await page.locator('input[type="file"]');
+    if (!fileInput) {
+      throw new Error('Could not find file input');
+    }
+
+    console.log('Selecting file');
+    await fileInput.setInputFiles('data/uploads/Puffins.fcjson');
+    await page.waitForLoadState('networkidle');
+    console.log('Network is idle');
+
+    console.log('Navigating to PDF page');
+    await page.goto('https://flosscross.com/designer/slot/1/pdf');
+    await page.waitForLoadState('networkidle');
+    console.log('Network is idle');
+
+    // Wait for and click Save To PDF button
+    console.log('Waiting for Save To PDF button');
+    await page.waitForSelector('button:has-text("Save To PDF")');
+    await page.click('button:has-text("Save To PDF")');
+
+    // Wait for and click OK button
+    console.log('Waiting for OK button');
+    await page.waitForSelector('.q-btn__content:has-text("OK")');
+    await page.click('.q-btn__content:has-text("OK")');
+
+    // Handle the download
+    const downloadPromise = page.waitForEvent('download');
+    const download = await downloadPromise;
+    
+    // Save the file
+    const suggestedFilename = download.suggestedFilename();
+    const downloadPath = path.join(process.env.DOWNLOAD_PATH || '/rails/storage/downloads', suggestedFilename);
+    await download.saveAs(downloadPath);
+    console.log(`Downloaded file to: ${downloadPath}`);
+
+  } catch (error) {
+    console.error('Error:', error.message);
+  } finally {
+    await context.close();
+    await browser.close();
+  }
+}
+
+// Run the script
+downloadPdf().catch(console.error);

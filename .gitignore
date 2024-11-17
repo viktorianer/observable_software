@@ -45,7 +45,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -67,4 +68,8 @@ Temporary Items
 .apdisk
 
 # End of https://www.toptal.com/developers/gitignore/api/osx
-n
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
