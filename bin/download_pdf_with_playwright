@@ -8,6 +8,12 @@ async function downloadPdf() {
     headless: true
   };
 
+  if (process.env.RAILS_ENV === 'development') {
+    browserOptions.wsEndpoint = 'ws://localhost:3001/playwright/chromium?token=6R0W53R135510';
+  } else if (process.env.RAILS_ENV === 'production') {
+    browserOptions.wsEndpoint = 'ws://chrome-accessory:3001/playwright/chromium?token=6R0W53R135510';
+  }
+
   // Use browserless if configured
   if (process.env.USE_BROWSERLESS) {
     browserOptions.wsEndpoint = process.env.BROWSERLESS_URL || 'ws://chrome-accessory:3000';
