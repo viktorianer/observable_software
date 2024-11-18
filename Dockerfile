@@ -49,9 +49,7 @@ RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
-    RAILS_MASTER_KEY=9c895fb07eb7538267fd094b854fa131 \
-    SECRET_KEY_BASE=8fc08abe7101032ef1b640b1df8107914f31e481f6e02671534efdb82c853b425ee370563416f86fdf90db39924e3e3704223aa18ddcdcb707820e1fc53473ce
+    BUNDLE_WITHOUT="development"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
