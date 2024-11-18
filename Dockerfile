@@ -65,9 +65,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
-
 # Final stage for app image
 FROM base
 
@@ -78,11 +75,11 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development"
 
 # Print environment variables
-RUN echo "Environment variables set here:   "
+RUN echo "Environment variables set here"
 RUN printenv
 
-RUN echo "Rails master key 2: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base 2: ${#SECRET_KEY_BASE}"
+RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
