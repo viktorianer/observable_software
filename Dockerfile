@@ -42,6 +42,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 imagemagick && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Print environment variables
+RUN echo "Environment variables:"
+RUN printenv
+
 RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
 RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
 
