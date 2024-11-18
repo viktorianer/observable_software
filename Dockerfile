@@ -78,7 +78,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development"
 
 # Print environment variables
-RUN echo "Environment variables are set:  "
+RUN echo "Environment variables set:   "
 RUN printenv
 
 RUN echo "Rails master key 2: ${#RAILS_MASTER_KEY}"
