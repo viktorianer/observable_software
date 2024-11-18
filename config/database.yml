@@ -39,3 +39,7 @@ production:
     <<: *default
     database: /rails/storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate
+  errors:
+    <<: *default
+    database: storage/production_errors.sqlite3
+    migrations_paths: db/errors_migrate
