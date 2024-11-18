@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# check=error=false
+# check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t mini_cross_stitching .
@@ -45,21 +45,6 @@ RUN apt-get update -qq && \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    RAILS_MASTER_KEY=9c895fb07eb7538267fd094b854fa131 \
-    SECRET_KEY_BASE=8fc08abe7101032ef1b640b1df8107914f31e481f6e02671534efdb82c853b425ee370563416f86fdf90db39924e3e3704223aa18ddcdcb707820e1fc53473ce \
-    BUNDLE_WITHOUT="development"
-
-# Print environment variables
-RUN echo "Environment variables are set:  "
-RUN printenv
-
-RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
-
 # Install packages needed to build gems
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git pkg-config && \
@@ -80,35 +65,26 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-
 RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
 RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
 
-
-# Add this near your entrypoint configuration
-COPY <<-"EOF" /rails/bin/healthcheck
-#!/bin/bash
-set -e
-
-if [ -z "$RAILS_MASTER_KEY" ]; then
-  echo "RAILS_MASTER_KEY is not set"
-  exit 1
-fi
-
-if [ -z "$SECRET_KEY_BASE" ]; then
-  echo "SECRET_KEY_BASE is not set"
-  exit 1
-fi
-
-exit 0
-EOF
-
-RUN chmod +x /rails/bin/healthcheck
-HEALTHCHECK --interval=5s --timeout=3s --start-period=10s --retries=3 CMD [ "/rails/bin/healthcheck" ]
-
-
 # Final stage for app image
 FROM base
+
+# Set production environment
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
+    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
+    BUNDLE_WITHOUT="development"
+
+# Print environment variables
+RUN echo "Environment variables are set:  "
+RUN printenv
+
+RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
