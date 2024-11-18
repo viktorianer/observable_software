@@ -81,8 +81,8 @@ ENV RAILS_ENV="production" \
 RUN echo "Environment variables are set:  "
 RUN printenv
 
-RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
+RUN echo "Rails master key 2: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base 2: ${#SECRET_KEY_BASE}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
