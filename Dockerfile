@@ -50,6 +50,12 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Set production environment
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
@@ -67,19 +73,6 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
-
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
-
-# Print environment variables
-RUN echo "Environment variables set here"
-RUN printenv
-
-RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
