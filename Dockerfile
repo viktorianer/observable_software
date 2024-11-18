@@ -7,9 +7,6 @@
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
-RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
-
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.4
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -44,6 +41,9 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 imagemagick && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
 
 # Set production environment
 ENV RAILS_ENV="production" \
