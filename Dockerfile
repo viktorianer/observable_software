@@ -1,5 +1,15 @@
 # syntax=docker/dockerfile:1
 # check=error=true
+# Set environment variables from .env file if it exists
+ENV RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
+ENV KAMAL_REGISTRY_PASSWORD=${KAMAL_REGISTRY_PASSWORD}
+ENV BROWSERLESS_URL=${BROWSERLESS_URL}
+ENV USE_BROWSERLESS=${USE_BROWSERLESS}
+ENV SOLID_ERRORS_USERNAME=${SOLID_ERRORS_USERNAME} 
+ENV SOLID_ERRORS_PASSWORD=${SOLID_ERRORS_PASSWORD}
+ENV ROOT_PASSWORD_FOR_HERTZNER=${ROOT_PASSWORD_FOR_HERTZNER}
+
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t mini_cross_stitching .
