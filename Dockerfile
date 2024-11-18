@@ -42,12 +42,8 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 imagemagick && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Print environment variables
-RUN echo "Environment variables are set:  "
-RUN printenv
-
-RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
-RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
+# Throw-away build stage to reduce size of final image
+FROM base AS build
 
 # Set production environment
 ENV RAILS_ENV="production" \
@@ -57,8 +53,12 @@ ENV RAILS_ENV="production" \
     SECRET_KEY_BASE=8fc08abe7101032ef1b640b1df8107914f31e481f6e02671534efdb82c853b425ee370563416f86fdf90db39924e3e3704223aa18ddcdcb707820e1fc53473ce \
     BUNDLE_WITHOUT="development"
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
+# Print environment variables
+RUN echo "Environment variables are set:  "
+RUN printenv
+
+RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
