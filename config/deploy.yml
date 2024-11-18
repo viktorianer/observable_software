@@ -86,6 +86,7 @@ builder:
   #   RUBY_VERSION: ruby-3.3.4
   secrets:
     - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
 
 # Use a different ssh user than root
 ssh:
