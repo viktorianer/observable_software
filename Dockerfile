@@ -71,6 +71,13 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
+# Add these near the top of your Dockerfile
+ARG RAILS_MASTER_KEY
+ARG SECRET_KEY_BASE
+
+# Set them as environment variables
+ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 
 RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
 RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
