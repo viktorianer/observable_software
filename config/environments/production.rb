@@ -89,7 +89,7 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
   # Configure Solid Errors
-  config.solid_errors.connects_to = { database: { writing: :errors } }
+  config.solid_errors.connects_to = { database: { writing: :primary } }
   config.solid_errors.send_emails = true
   config.solid_errors.email_from = "john@synapticmishap.co.uk"
   config.solid_errors.email_to = "john@synapticmishap.co.uk"
