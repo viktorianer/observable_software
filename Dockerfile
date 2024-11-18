@@ -46,7 +46,9 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development" \
+    RAILS_MASTER_KEY=$RAILS_MASTER_KEY \
+    SECRET_KEY_BASE=$SECRET_KEY_BASE
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -71,16 +73,32 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-# Add these near the top of your Dockerfile
-ARG RAILS_MASTER_KEY
-ARG SECRET_KEY_BASE
-
-# Set them as environment variables
-ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 
 RUN echo "Rails master key: ${#RAILS_MASTER_KEY}"
 RUN echo "Secret key base: ${#SECRET_KEY_BASE}"
+
+
+# Add this near your entrypoint configuration
+COPY <<-"EOF" /rails/bin/healthcheck
+#!/bin/bash
+set -e
+
+if [ -z "$RAILS_MASTER_KEY" ]; then
+  echo "RAILS_MASTER_KEY is not set"
+  exit 1
+fi
+
+if [ -z "$SECRET_KEY_BASE" ]; then
+  echo "SECRET_KEY_BASE is not set"
+  exit 1
+fi
+
+exit 0
+EOF
+
+RUN chmod +x /rails/bin/healthcheck
+HEALTHCHECK --interval=5s --timeout=3s --start-period=10s --retries=3 CMD [ "/rails/bin/healthcheck" ]
+
 
 # Final stage for app image
 FROM base
