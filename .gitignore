@@ -75,3 +75,5 @@ node_modules/
 /playwright/.cache/
 
 /config/credentials/production.key
+
+.kamal/secrets
