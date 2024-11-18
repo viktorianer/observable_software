@@ -43,7 +43,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Print environment variables
-RUN echo "Environment variables:"
+RUN echo "Environment variables are:"
 RUN printenv
 
 RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"

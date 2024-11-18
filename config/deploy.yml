@@ -1,5 +1,4 @@
 
-version: 1
 # Name of your application. Used to uniquely configure containers.
 service: mini_cross_stitching
 
