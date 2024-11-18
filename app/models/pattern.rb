@@ -321,4 +321,8 @@ class Pattern < ApplicationRecord
   def generate_preview
     CreatePreviewFromPatternJob.perform_later(id)
   end
+
+  def definition_without_images
+    parsed_data.except(:srcs)
+  end
 end

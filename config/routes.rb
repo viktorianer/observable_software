@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     member do
       get :update_progress
       get :download
+      get :download_pdf
     end
   end
   root "patterns#new"

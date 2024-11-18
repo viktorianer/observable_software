@@ -35,6 +35,30 @@ class PatternsController < ApplicationController
     render partial: "patterns/progress_bar"
   end
 
+  def download_pdf
+    @pattern = Pattern.find(params[:id])
+    response = HTTParty.post(
+      "#{pdf_service_host}/download_pdf",
+      body: { pattern: @pattern.definition_without_images }.to_json,
+      headers: { "Content-Type" => "application/json" }
+    )
+
+    if response.success?
+      send_data response.body, filename: "#{@pattern.name.parameterize}_pattern.pdf", type: "application/pdf", disposition: "inline"
+    else
+      Rails.logger.info("Download PDF response: #{response.body}")
+      render :show, status: :unprocessable_entity
+    end
+  end
+
+  def pdf_service_host
+    if Rails.env.development?
+      "http://localhost:3004"
+    else
+      "http://pdf-service:3004"
+    end
+  end
+
   def download
     @pattern = Pattern.find(params[:id])
 

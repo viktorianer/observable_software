@@ -75,3 +75,5 @@ gem "rubyzip"
 gem "ferrum", "~> 0.15"
 
 gem "playwright-ruby-client", "~> 1.48"
+
+gem "httparty"
