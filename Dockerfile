@@ -75,8 +75,6 @@ FROM base
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    RAILS_MASTER_KEY=${RAILS_MASTER_KEY} \
-    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
     BUNDLE_WITHOUT="development"
 
 # Print environment variables
