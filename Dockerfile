@@ -7,6 +7,9 @@
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
+RUN echo "Rails master key 1: ${#RAILS_MASTER_KEY}"
+RUN echo "Secret key base 1: ${#SECRET_KEY_BASE}"
+
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.4
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
