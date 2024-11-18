@@ -97,8 +97,8 @@ ssh:
 accessories:
   chrome:
     image: ghcr.io/browserless/chromium
-    service: chrome-accessory
-    port: "127.0.0.1:9222:3000"
+    service: chrome
+    port: "127.0.0.1:3000:3000"
     roles:
       - web
     env:
@@ -111,6 +111,6 @@ accessories:
   pdf-service:
     image: synapticmishap/pdf-service
     service: pdf-service
-    port: "127.0.0.1:3002:3000"
+    port: "127.0.0.1:3004:3004"
     roles:
       - web
