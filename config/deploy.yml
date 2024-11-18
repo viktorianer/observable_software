@@ -36,6 +36,7 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -77,6 +78,9 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  secrets:
+    - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
@@ -84,9 +88,6 @@ builder:
   # # Pass arguments and secrets to the Docker build process
   # args:
   #   RUBY_VERSION: ruby-3.3.4
-  secrets:
-    - RAILS_MASTER_KEY
-    - SECRET_KEY_BASE
 
 # Use a different ssh user than root
 ssh:
