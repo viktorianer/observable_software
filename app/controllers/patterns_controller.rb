@@ -7,6 +7,7 @@ class PatternsController < ApplicationController
 
   def create
     pattern = Pattern.create!(definition: params[:fcjson].read)
+    pattern.strip_images_from_definition!
     pattern.update_name_from_fcjson!
     pattern.guess_orientation!
     redirect_to edit_pattern_path(pattern)

@@ -219,7 +219,11 @@ class Pattern < ApplicationRecord
   end
 
   def update_name_from_fcjson!
-    update!(name: parsed_data.dig(:info, :title))
+    update!(name: (parsed_data.dig(:info, :title) || "").gsub("_png", ""))
+  end
+
+  def strip_images_from_definition!
+    update!(definition: parsed_data.except(:srcs).to_json)
   end
 
   def guess_orientation!
