@@ -87,6 +87,7 @@ GEM
     brakeman (6.2.2)
       racc
     builder (3.3.0)
+    bump (0.10.0)
     capybara (3.40.0)
       addressable
       matrix
@@ -419,6 +420,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   brakeman
+  bump
   capybara
   debug
   ferrum (~> 0.15)
