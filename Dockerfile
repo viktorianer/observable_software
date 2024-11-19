@@ -72,13 +72,19 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
-FROM base
+# FROM base
 
 # Set production environment
 ENV RAILS_ENV=production \
     BUNDLE_DEPLOYMENT=1 \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT=development
+
+RUN echo "Environment variables set here"
+RUN echo "RAILS_ENV: ${RAILS_ENV}"
+RUN echo "BUNDLE_DEPLOYMENT: ${BUNDLE_DEPLOYMENT}"
+RUN echo "BUNDLE_PATH: ${BUNDLE_PATH}"
+RUN echo "BUNDLE_WITHOUT: ${BUNDLE_WITHOUT}"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
