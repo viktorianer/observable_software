@@ -10,5 +10,3 @@ COPY . .
 EXPOSE 3004
 
 ENTRYPOINT ["/usr/src/app/bin/docker-entrypoint"]
-
-CMD ["sh", "-c", "node server.js"]
