@@ -117,7 +117,7 @@ class Pattern < ApplicationRecord
   PREVIEW_WITH_BORDER_DIMENSIONS = {
     portrait: {
       small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-      small_wide: [ 46 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      small_wide: [ 40 * STITCH_WIDTH, 53 * STITCH_WIDTH ],
       medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
       medium_large: [ 65 * STITCH_WIDTH, 87 * STITCH_WIDTH ],
       medium_tall: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
@@ -261,6 +261,10 @@ class Pattern < ApplicationRecord
       montage.background "none"
       montage << "-virtual-pixel" << "transparent"
       montage << combined_image.path
+    end
+
+    combined_image.combine_options do |i|
+      i.brightness_contrast "-12x20"
     end
 
     temp_file = Tempfile.new([ "preview", ".png" ], "tmp")
