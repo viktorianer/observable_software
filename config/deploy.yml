@@ -109,6 +109,6 @@ accessories:
   pdf-service:
     image: synapticmishap/pdf-service
     service: pdf-service
-    port: "127.0.0.1:3004:3004"
+    port: 3004:3004
     roles:
       - web
