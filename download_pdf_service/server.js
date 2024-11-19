@@ -41,6 +41,12 @@ app.post('/download_pdf', async (req, res) => {
     await page.goto('https://flosscross.com/designer/slot/1/pdf');
     await page.waitForLoadState('networkidle');
 
+    if (req.body.title) {
+      console.log('Setting title');
+      const titleInput = await page.locator('.sPdfBuilder-groupContent input[aria-label="Title"]').first();
+      await titleInput.fill(req.body.title);
+    }
+
     console.log('Clicking Save To PDF');
     await page.waitForSelector('button:has-text("Save To PDF")');
     await page.click('button:has-text("Save To PDF")');
