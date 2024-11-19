@@ -55,7 +55,7 @@ class PatternsController < ApplicationController
     if Rails.env.development?
       "http://localhost:3004"
     else
-      "http://pdf-service:3004"
+      "http://pdf_service:3004"
     end
   end
 
