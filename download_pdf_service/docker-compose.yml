@@ -3,9 +3,8 @@ services:
   chrome:
     image: ghcr.io/browserless/chromium
     environment:
-      - MAX_CONCURRENT_SESSIONS=10
-      - CONNECTION_TIMEOUT=30000
-      - KEEP_ALIVE=true
+      - CONCURRENT=10
+      - TIMEOUT=30000
 
   pdf-service:
     build: .
