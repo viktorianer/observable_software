@@ -93,8 +93,6 @@ Rails.application.configure do
   config.solid_errors.send_emails = true
   config.solid_errors.email_from = "john@synapticmishap.co.uk"
   config.solid_errors.email_to = "john@synapticmishap.co.uk"
-  config.solid_errors.username = "admin"
-  config.solid_errors.password = "password"
-  # config.solid_errors.username = Rails.application.credentials.solid_errors.username!
-  # config.solid_errors.password = Rails.application.credentials.solid_errors.password!
+  config.solid_errors.username = Rails.application.credentials.dig(:solid_errors, :username)
+  config.solid_errors.password = Rails.application.credentials.dig(:solid_errors, :password)
 end
