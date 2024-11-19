@@ -107,7 +107,7 @@ accessories:
     directories:
       - data/uploads:/rails/storage/uploads
   pdf_service:
-    image: synapticmishap/pdf-service
+    image: synapticmishap/pdf-service:latest
     service: pdf_service
     port: "127.0.0.1:3004:3004"
     roles:
