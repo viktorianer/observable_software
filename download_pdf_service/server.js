@@ -41,11 +41,14 @@ app.post('/download_pdf', async (req, res) => {
     await page.goto('https://flosscross.com/designer/slot/1/pdf');
     await page.waitForLoadState('networkidle');
 
-    if (req.body.title) {
-      console.log('Setting title');
-      const titleInput = await page.locator('.sPdfBuilder-groupContent input[aria-label="Title"]').first();
-      await titleInput.fill(req.body.title);
-    }
+    const width = req.body.pattern.model.images[0].width;
+    const height = req.body.pattern.model.images[0].height;
+    await page.getByLabel('Image caption').fill(`Design size: ${width} x ${height} stitches`);
+    await page.getByLabel('Description').first().fill('Pixel Art Mini Cross Stitch Pattern\n\nAvailable from https://minicrossstitching.etsy.com');
+    await page.getByLabel('Subtitle').fill('Cross stitch chart');
+    await page.getByLabel('Header text').fill('Cross stitch chart');
+    await page.getByLabel('Footer text').fill('© 2024 Mini Cross Stitching');
+    await page.getByLabel('Title').nth(2).fill('Floss list for stitches');
 
     console.log('Clicking Save To PDF');
     await page.waitForSelector('button:has-text("Save To PDF")');
