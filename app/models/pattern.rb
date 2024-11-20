@@ -333,4 +333,9 @@ class Pattern < ApplicationRecord
   def definition_without_images
     parsed_data.except(:srcs)
   end
+
+  def copy_name_into_definition!
+    parsed_definition_with_name_as_title = parsed_data.deep_merge(info: { title: name })
+    update!(definition: parsed_definition_with_name_as_title.to_json)
+  end
 end

@@ -20,6 +20,7 @@ class PatternsController < ApplicationController
   def update
     @pattern = Pattern.find(params[:id])
     @pattern.update!(pattern_params)
+    @pattern.copy_name_into_definition!
     @pattern.start_generating_preview!
     CreatePreviewFromPatternJob.perform_later(@pattern.id)
 
