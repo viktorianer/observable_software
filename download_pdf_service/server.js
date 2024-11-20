@@ -11,19 +11,17 @@ app.post('/download_pdf', async (req, res) => {
     return res.status(400).json({ error: 'Pattern is required', body: req.body });
   }
 
-  const browserOptions = {
-    wsEndpoint: 'ws://chrome:3000/playwright/chromium?token=6R0W53R135510'
-  };
-
   try {
-    // Create temp file for the JSON data
     const jsonTempPath = '/tmp/temp.fcjson';
     await fs.writeFile(jsonTempPath, JSON.stringify(req.body.pattern));
 
-    const browser = await chromium.connect(browserOptions.wsEndpoint);
+    const browser = process.env.LOCAL
+      ? await chromium.launch({ headless: false })
+      : await chromium.connect('ws://chrome:3000/playwright/chromium?token=6R0W53R135510');
+
     const context = await browser.newContext({
       acceptDownloads: true,
-      viewport: { width: 1200, height: 800 }
+      viewport: { width: 1200, height: 800 },
     });
 
     const page = await context.newPage();
