@@ -28,7 +28,7 @@ RSpec.describe Pattern, type: :model do
       pattern.add_border_to_preview(:large)
 
       expect_pattern_to_have_image(pattern:, width: 40 * 32, height: 55 * 32, size: :small)
-      expect_pattern_to_have_image(pattern:, width: 46 * 32, height: 55 * 32, size: :small_wide)
+      expect_pattern_to_have_image(pattern:, width: 40 * 32, height: 57 * 32, size: :small_wide)
       expect_pattern_to_have_image(pattern:, width: 55 * 32, height: 75 * 32, size: :medium)
       expect_pattern_to_have_image(pattern:, width: 75 * 32, height: 100 * 32, size: :large)
     end
