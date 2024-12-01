@@ -82,5 +82,5 @@ app.post('/download_pdf', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`PDF service listening at V2 http://localhost:${port}`);
+  console.log(`PDF service listening at http://localhost:${port}`);
 }); 
