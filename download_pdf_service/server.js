@@ -47,6 +47,7 @@ app.post('/download_pdf', async (req, res) => {
     await page.getByLabel('Header text').fill('Cross stitch chart');
     await page.getByLabel('Footer text').fill('© 2024 Mini Cross Stitching');
     await page.getByLabel('Title').nth(2).fill('Floss list for stitches');
+    await page.getByLabel('Pattern symbol size (mm)').fill((166.6 / width).toFixed(1).toString());
 
     console.log('Clicking Save To PDF');
     await page.waitForSelector('button:has-text("Save To PDF")');
