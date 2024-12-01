@@ -117,7 +117,7 @@ class Pattern < ApplicationRecord
   PREVIEW_WITH_BORDER_DIMENSIONS = {
     portrait: {
       small: [ 40 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
-      small_wide: [ 40 * STITCH_WIDTH, 53 * STITCH_WIDTH ],
+      small_wide: [ 40 * STITCH_WIDTH, 57 * STITCH_WIDTH ],
       medium: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
       medium_large: [ 65 * STITCH_WIDTH, 87 * STITCH_WIDTH ],
       medium_tall: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
