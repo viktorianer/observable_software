@@ -50,10 +50,10 @@ class Pattern < ApplicationRecord
   BACKGROUND_CUTOUT_DIMENSIONS = {
     portrait: {
       in_hand: [
-        [ 600, 810 ],
-        [ 1432, 946 ],
-        [ 432, 1850 ],
-        [ 1262, 1986 ]
+        [ 546, 710 ],
+        [ 1476, 862 ],
+        [ 355, 1878 ],
+        [ 1290, 2030 ]
       ],
       green_wall_with_stool: [
         [ 870, 1157 ],
