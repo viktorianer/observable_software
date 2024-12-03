@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   mount SolidErrors::Engine, at: "/solid_errors"
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   resources :patterns, only: [ :new, :create, :show, :edit, :update ] do
     member do

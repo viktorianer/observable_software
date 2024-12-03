@@ -210,6 +210,16 @@ GEM
     mini_magick (5.0.1)
     mini_mime (1.1.5)
     minitest (5.25.1)
+    mission_control-jobs (0.6.0)
+      actioncable (>= 7.1)
+      actionpack (>= 7.1)
+      activejob (>= 7.1)
+      activerecord (>= 7.1)
+      importmap-rails (>= 1.2.1)
+      irb (~> 1.13)
+      railties (>= 7.1)
+      stimulus-rails
+      turbo-rails
     msgpack (1.7.3)
     multi_json (1.15.0)
     multi_xml (0.7.1)
@@ -437,6 +447,9 @@ GEM
     thruster (0.1.8-x86_64-linux)
     timeout (0.4.1)
     trailblazer-option (0.1.2)
+    turbo-rails (2.0.11)
+      actionpack (>= 6.0.0)
+      railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uber (0.1.0)
@@ -488,6 +501,7 @@ DEPENDENCIES
   kamal
   memory_profiler (~> 1.1)
   mini_magick (~> 5.0)
+  mission_control-jobs (~> 0.6.0)
   playwright-ruby-client (~> 1.48)
   propshaft
   puma (>= 5.0)
