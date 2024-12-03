@@ -80,3 +80,7 @@ gem "playwright-ruby-client", "~> 1.48"
 gem "httparty"
 
 gem "solid_errors", "~> 0.6.1"
+
+gem "google-api-client", "~> 0.53.0"
+
+gem "googleauth", "~> 1.11"

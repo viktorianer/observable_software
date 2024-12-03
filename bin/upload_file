@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require "dotenv"
+require "bundler/setup"
+require_relative "../app/repos/google_drive"
+
+Dotenv.load
+
+drive = Repos::GoogleDrive.new
+# drive.create(filename: "test.txt", content: "Hello, world!")
+puts drive.list
