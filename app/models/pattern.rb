@@ -310,7 +310,7 @@ class Pattern < ApplicationRecord
   end
 
   def has_blank_stitches?
-    parsed_data.dig(:model, :images, 0, :flossIndexes).any? { |floss_index| floss_index.fetch(:id) == "BLANK" }
+    parsed_data.dig(:model, :images, 0, :layers, 0, :cross).include?(-1)
   end
 
   def self.from_fcjson_to_threads(fcjson_data)
