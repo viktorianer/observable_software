@@ -316,7 +316,7 @@ class Pattern < ApplicationRecord
 
     crosses.map do |cross|
       if cross == -1
-        "blank"
+        "BLANK"
       else
         floss_index = parsed_data.dig(:model, :images, 0, :crossIndexes, cross, :fi)
         floss_indices = parsed_data.dig(:model, :images, 0, :flossIndexes)
