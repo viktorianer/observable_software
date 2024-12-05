@@ -40,7 +40,7 @@ RSpec.describe Pattern, type: :model do
       threads = Pattern.from_fcjson_to_threads(fcjson_data)
       expect(threads).to eq([
         [ "01", "307" ],
-        [ "820", "blank" ]
+        [ "820", "_" ]
       ])
     end
   end

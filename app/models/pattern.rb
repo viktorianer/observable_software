@@ -309,6 +309,10 @@ class Pattern < ApplicationRecord
     temp_file.unlink
   end
 
+  def has_blank_stitches?
+    parsed_data.dig(:model, :images, 0, :flossIndexes).any? { |floss_index| floss_index.fetch(:id) == "BLANK" }
+  end
+
   def self.from_fcjson_to_threads(fcjson_data)
     parsed_data = JSON.parse(fcjson_data, symbolize_names: true)
     crosses = parsed_data.dig(:model, :images, 0, :layers, 0, :cross)
@@ -316,7 +320,7 @@ class Pattern < ApplicationRecord
 
     crosses.map do |cross|
       if cross == -1
-        "BLANK"
+        "_"
       else
         floss_index = parsed_data.dig(:model, :images, 0, :crossIndexes, cross, :fi)
         floss_indices = parsed_data.dig(:model, :images, 0, :flossIndexes)
