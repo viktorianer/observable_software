@@ -286,7 +286,7 @@ class Pattern < ApplicationRecord
     preview_image_height = preview_image.data.dig("geometry", "height")
     aida_background = MiniMagick::Image.create(".png")
     aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
-    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.fetch(orientation.to_sym).fetch(size)
+    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.dig(orientation.to_sym, size)
     MiniMagick.convert do |c|
       c.size "#{width_with_border}x#{height_with_border}"
       c << "tile:#{aida_image.path}"
