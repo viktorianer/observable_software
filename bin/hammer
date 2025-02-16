@@ -1,0 +1,51 @@
+#! /usr/bin/env ruby
+
+require 'bundler/setup'
+require 'faraday'
+require 'faraday/multipart'
+
+class CreatePatternFromFCJSON
+  def initialize(fcjson_path)
+    @fcjson_path = fcjson_path
+  end
+
+  def call
+    conn = Faraday.new(url: 'http://localhost:3000') do |faraday|
+      faraday.request :multipart
+      faraday.adapter Faraday.default_adapter
+    end
+
+    payload = { fcjson: Faraday::UploadIO.new(@fcjson_path, 'application/octet-stream') }
+    response = conn.post('/patterns', payload, { 'Content-Type' => 'multipart/form-data' })
+    edit_url = response.headers["location"]
+    pattern_id = edit_url.match(/\/patterns\/(\d+)\/edit/)[1]
+    orientation = File.basename(@fcjson_path).match(/square_(\d+)_(\d+)/i).then { |m| 
+      height = m[1].to_i
+      width = m[2].to_i
+      if height == width
+        'square'
+      elsif height < width
+        'landscape'
+      else
+        'portrait'
+      end
+    }
+    body = URI.encode_www_form(
+      {
+        _method: 'patch',
+        "pattern[name]": 'IMG_0027_jpeg',
+        "pattern[orientation]": orientation,
+        commit: 'Update Pattern'
+      }
+    )
+    conn.post("/patterns/#{pattern_id}", body, { 'Content-Type' => 'application/x-www-form-urlencoded' })
+    puts "Uploaded #{@fcjson_path}..."
+  end
+end
+
+
+patterns_to_upload = Dir.glob('data/uploads/square*')
+
+patterns_to_upload.each do |pattern|
+  CreatePatternFromFCJSON.new(pattern).call
+end

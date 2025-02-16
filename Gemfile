@@ -88,3 +88,9 @@ gem "googleauth", "~> 1.11"
 gem "mission_control-jobs", "~> 0.6.0"
 
 gem "dotenv", "~> 3.1"
+
+gem "faraday", "~> 2.12"
+
+gem "faraday-multipart", "~> 1.1"
+
+gem "faraday-follow_redirects", "~> 0.3.0"
