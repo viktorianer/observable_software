@@ -12,6 +12,7 @@ class CreatePatternFromFCJSON
   def call
     conn = Faraday.new(url: 'http://localhost:3000') do |faraday|
       faraday.request :multipart
+      faraday.response :raise_error
       faraday.adapter Faraday.default_adapter
     end
 
