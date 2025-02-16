@@ -16,13 +16,22 @@ task = "shell.exec"
 args = "bin/hammer"
 
 [[workflows.workflow]]
-name = "Open Server"
+name = "Open App"
 mode = "sequential"
 author = 3638850
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "bin/open"
+
+[[workflows.workflow]]
+name = "Show Errors"
+mode = "sequential"
+author = 3638850
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bin/errors"
 
 [[ports]]
 localPort = 3000

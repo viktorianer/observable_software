@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-open "https://$REPLIT_DEV_DOMAIN/solid_errors"
+xdg-open "https://$REPLIT_DEV_DOMAIN/solid_errors" || sensible-browser "https://$REPLIT_DEV_DOMAIN/solid_errors" || x-www-browser "https://$REPLIT_DEV_DOMAIN/solid_errors" || python3 -m webbrowser "https://$REPLIT_DEV_DOMAIN/solid_errors"
