@@ -9,4 +9,7 @@ OpenTelemetry::SDK.configure do |c|
       span_naming: :job_class
     }
   )
+  c.resource = OpenTelemetry::SDK::Resources::Resource.create(
+    "service.commit_sha" => `git rev-parse HEAD`.strip
+  )
 end
