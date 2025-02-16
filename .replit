@@ -1,0 +1,8 @@
+modules = ["ruby-3.2", "web", "nodejs-20", "bash"]
+run = "bin/serve"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "bin/serve"]
