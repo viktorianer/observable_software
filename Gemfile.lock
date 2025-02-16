@@ -126,7 +126,6 @@ GEM
       concurrent-ruby (~> 1.1)
       webrick (~> 1.7)
       websocket-driver (~> 0.7)
-    foreman (0.88.1)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -735,7 +734,6 @@ DEPENDENCIES
   faraday-follow_redirects (~> 0.3.0)
   faraday-multipart (~> 1.1)
   ferrum (~> 0.15)
-  foreman (~> 0.88.1)
   google-api-client (~> 0.53.0)
   googleauth (~> 1.11)
   httparty

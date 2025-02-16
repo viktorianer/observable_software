@@ -1,5 +1,5 @@
 modules = ["ruby-3.3", "web", "nodejs-20", "bash"]
-run = "bin/serve"
+run = "bin/setup && bin/serve"
 
 [nix]
 channel = "stable-24_05"
