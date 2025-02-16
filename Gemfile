@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby "3.3.1"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.0.rc1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -41,12 +43,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
+  gem "debug", "~> 1.10.0"
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
@@ -86,3 +83,15 @@ gem "google-api-client", "~> 0.53.0"
 gem "googleauth", "~> 1.11"
 
 gem "mission_control-jobs", "~> 0.6.0"
+
+gem "dotenv", "~> 3.1"
+
+gem "faraday", "~> 2.12"
+
+gem "faraday-multipart", "~> 1.1"
+
+gem "faraday-follow_redirects", "~> 0.3.0"
+
+gem "opentelemetry-sdk", "~> 1.7"
+gem "opentelemetry-exporter-otlp", "~> 0.29.1"
+gem "opentelemetry-instrumentation-all", "~> 0.74.0"

@@ -1,6 +1,8 @@
 require "zip"
 
 class PatternsController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   def new
     render :new
   end

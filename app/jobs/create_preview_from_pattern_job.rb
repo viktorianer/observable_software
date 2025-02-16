@@ -7,16 +7,7 @@ class CreatePreviewFromPatternJob < ApplicationJob
     pattern.create_preview
     pattern.add_border_to_preview(:small)
     pattern.add_border_to_preview(:small_wide)
-    pattern.add_border_to_preview(:medium)
-    pattern.add_border_to_preview(:medium_tall)
-    pattern.add_border_to_preview(:medium_large)
-    pattern.add_border_to_preview(:large)
-    pattern.add_border_to_preview(:large_tall)
     pattern.add_image_for(:in_hand)
-    pattern.add_image_for(:close_up)
-    pattern.add_image_for(:green_wall_with_stool)
-    pattern.add_image_for(:nightstand)
-    pattern.add_image_for(:chest_of_drawers)
     pattern.finish_generating_preview!
   end
 end

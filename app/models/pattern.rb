@@ -260,6 +260,7 @@ class Pattern < ApplicationRecord
       montage.geometry "#{STITCH_WIDTH}x#{STITCH_WIDTH}+0+0"
       montage.background "none"
       montage << "-virtual-pixel" << "transparent"
+      montage << "-font" << "DejaVu-Sans"
       montage << combined_image.path
     end
 
