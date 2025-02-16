@@ -77,13 +77,13 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     bcrypt_pbkdf (1.1.1)
+    bcrypt_pbkdf (1.1.1-arm64-darwin)
+    bcrypt_pbkdf (1.1.1-x86_64-darwin)
     benchmark (0.3.0)
     bigdecimal (3.1.8)
     bindex (0.8.1)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    brakeman (6.2.2)
-      racc
     builder (3.3.0)
     bump (0.10.0)
     capybara (3.40.0)
@@ -100,7 +100,7 @@ GEM
     crass (1.0.6)
     csv (3.3.0)
     date (3.3.4)
-    debug (1.9.2)
+    debug (1.10.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
     declarative (0.0.20)
@@ -126,6 +126,7 @@ GEM
       concurrent-ruby (~> 1.1)
       webrick (~> 1.7)
       websocket-driver (~> 0.7)
+    foreman (0.88.1)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -726,15 +727,15 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
-  brakeman
   bump
   capybara
-  debug
+  debug (~> 1.10.0)
   dotenv (~> 3.1)
   faraday (~> 2.12)
   faraday-follow_redirects (~> 0.3.0)
   faraday-multipart (~> 1.1)
   ferrum (~> 0.15)
+  foreman (~> 0.88.1)
   google-api-client (~> 0.53.0)
   googleauth (~> 1.11)
   httparty
@@ -768,7 +769,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-   ruby 3.4.1p0
+   ruby 3.3.1p55
 
 BUNDLED WITH
    2.5.22
