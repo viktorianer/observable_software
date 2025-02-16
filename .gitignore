@@ -78,3 +78,4 @@ node_modules/
 
 .kamal/secrets
 .setup_complete
+mini_magick*
