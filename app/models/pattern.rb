@@ -282,32 +282,42 @@ class Pattern < ApplicationRecord
   end
 
   def add_border_to_preview(size = :small)
-    preview_image = MiniMagick::Image.read(preview.download)
-    preview_image_width = preview_image.data.dig("geometry", "width")
-    preview_image_height = preview_image.data.dig("geometry", "height")
-    aida_background = MiniMagick::Image.create(".png")
-    aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
-    width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.dig(orientation.to_sym, size)
-    MiniMagick.convert do |c|
-      c.size "#{width_with_border}x#{height_with_border}"
-      c << "tile:#{aida_image.path}"
-      c.colorspace "sRGB"
-      c.type "TrueColor"
-      c << "PNG24:#{aida_background.path}"
+    tracer = OpenTelemetry.tracer_provider.tracer("minicrossstitching")
+    tracer.in_span("Pattern#add_border_to_preview") do |span|
+      span.set_attribute("code.namespace", "Pattern")
+      span.set_attribute("code.function.name", "add_border_to_preview")
+      span.set_attribute("app.code.args.size", size.to_s)
+      span.set_attribute("app.pattern.id", id)
+      span.set_attribute("app.pattern.width", width)
+      span.set_attribute("app.pattern.height", height)
+      span.set_attribute("app.pattern.orientation", orientation)
+      preview_image = MiniMagick::Image.read(preview.download)
+      preview_image_width = preview_image.data.dig("geometry", "width")
+      preview_image_height = preview_image.data.dig("geometry", "height")
+      aida_background = MiniMagick::Image.create(".png")
+      aida_image = MiniMagick::Image.open(Rails.root.join("data", "threads", "aida_grey.png"))
+      width_with_border, height_with_border = PREVIEW_WITH_BORDER_DIMENSIONS.dig(orientation.to_sym, size)
+      MiniMagick.convert do |c|
+        c.size "#{width_with_border}x#{height_with_border}"
+        c << "tile:#{aida_image.path}"
+        c.colorspace "sRGB"
+        c.type "TrueColor"
+        c << "PNG24:#{aida_background.path}"
+      end
+      preview_image_on_aida = aida_background.composite(preview_image) do |c|
+        c.compose "Over"
+        x_offset = ((width_with_border - preview_image_width) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
+        y_offset = ((height_with_border - preview_image_height) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
+        c.geometry "+#{x_offset}+#{y_offset}"
+      end
+      temp_file = Tempfile.new([ "preview_image_on_aida", ".png" ], "tmp")
+      preview_image_on_aida.write(temp_file.path)
+      temp_file.rewind
+      send("preview_with_border_#{size}").attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
+      save!
+      temp_file.close
+      temp_file.unlink
     end
-    preview_image_on_aida = aida_background.composite(preview_image) do |c|
-      c.compose "Over"
-      x_offset = ((width_with_border - preview_image_width) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
-      y_offset = ((height_with_border - preview_image_height) / (STITCH_WIDTH * 2)).floor * STITCH_WIDTH
-      c.geometry "+#{x_offset}+#{y_offset}"
-    end
-    temp_file = Tempfile.new([ "preview_image_on_aida", ".png" ], "tmp")
-    preview_image_on_aida.write(temp_file.path)
-    temp_file.rewind
-    send("preview_with_border_#{size}").attach(io: temp_file, filename: "preview_image_on_aida.png", content_type: "image/png")
-    save!
-    temp_file.close
-    temp_file.unlink
   end
 
   def has_blank_stitches?
