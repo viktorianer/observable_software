@@ -19,6 +19,7 @@ class CreatePatternFromFCJSON
     payload = { fcjson: Faraday::UploadIO.new(@fcjson_path, 'application/octet-stream') }
     response = conn.post('/patterns', payload, { 'Content-Type' => 'multipart/form-data' })
     edit_url = response.headers["location"]
+    sleep 1
     pattern_id = edit_url.match(/patterns\/(\d+)/)[1]
     orientation = File.basename(@fcjson_path).match(/square_(\d+)_(\d+)/i).then { |m| 
       height = m[1].to_i
@@ -41,6 +42,7 @@ class CreatePatternFromFCJSON
     )
     conn.post("/patterns/#{pattern_id}", body, { 'Content-Type' => 'application/x-www-form-urlencoded' })
     puts "Uploaded #{@fcjson_path}..."
+    sleep 1
   end
 end
 
