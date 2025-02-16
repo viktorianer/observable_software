@@ -28,6 +28,13 @@ class Pattern < ApplicationRecord
       chest_of_drawers: :medium_tall,
       close_up: :large_tall,
       green_wall_with_stool: :medium
+    },
+    landscape: {
+      in_hand: :small,
+      nightstand: :small,
+      chest_of_drawers: :medium_tall,
+      close_up: :large_tall,
+      green_wall_with_stool: :medium
     }
   }
 
@@ -60,6 +67,38 @@ class Pattern < ApplicationRecord
         [ 1132, 1157 ],
         [ 870, 1518 ],
         [ 1132, 1518 ]
+      ],
+      nightstand: [
+        [ 1140, 1870 ],
+        [ 1465, 1880 ],
+        [ 1115, 2321 ],
+        [ 1445, 2338 ]
+      ],
+      chest_of_drawers: [
+        [ 315, 464 ],
+        [ 653, 466 ],
+        [ 310, 955 ],
+        [ 651, 957 ]
+      ],
+      close_up: [
+        [ 0, 0 ],
+        [ 2000, 0 ],
+        [ 0, 2666 ],
+        [ 2000, 2666 ]
+      ]
+    },
+    landscape: {
+      in_hand: [
+        [ 521, 835 ],
+        [ 1505, 995 ],
+        [ 366, 1800 ],
+        [ 1351, 1958 ]
+      ],
+      green_wall_with_stool: [
+        [ 920, 1157 ],
+        [ 1280, 1157 ],
+        [ 920, 1518 ],
+        [ 1280, 1518 ]
       ],
       nightstand: [
         [ 1140, 1870 ],
@@ -123,6 +162,15 @@ class Pattern < ApplicationRecord
       medium_tall: [ 55 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
       large: [ 75 * STITCH_WIDTH, 100 * STITCH_WIDTH ],
       large_tall: [ 65 * STITCH_WIDTH, 85 * STITCH_WIDTH ]
+    },
+    landscape: {
+      small: [ 55 * STITCH_WIDTH, 40 * STITCH_WIDTH ],
+      small_wide: [ 57 * STITCH_WIDTH, 40 * STITCH_WIDTH ],
+      medium: [ 75 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      medium_large: [ 87 * STITCH_WIDTH, 65 * STITCH_WIDTH ],
+      medium_tall: [ 75 * STITCH_WIDTH, 55 * STITCH_WIDTH ],
+      large: [ 100 * STITCH_WIDTH, 75 * STITCH_WIDTH ],
+      large_tall: [ 85 * STITCH_WIDTH, 65 * STITCH_WIDTH ]
     },
     square: {
       small: [ 43 * STITCH_WIDTH, 43 * STITCH_WIDTH ],
