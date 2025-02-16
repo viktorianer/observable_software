@@ -4,8 +4,16 @@ run = "bin/setup && bin/serve"
 [nix]
 channel = "stable-24_05"
 
-[deployment]
-run = ["sh", "-c", "bin/serve"]
+[workflows]
+
+[[workflows.workflow]]
+name = "Hammer"
+mode = "sequential"
+author = 3638850
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bin/hammer"
 
 [[ports]]
 localPort = 3000
