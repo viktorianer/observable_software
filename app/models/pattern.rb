@@ -281,7 +281,7 @@ class Pattern < ApplicationRecord
     self
   end
 
-  def add_border_to_preview(size = :small)
+  def add_border_to_preview(size)
     preview_image = MiniMagick::Image.read(preview.download)
     preview_image_width = preview_image.data.dig("geometry", "width")
     preview_image_height = preview_image.data.dig("geometry", "height")
