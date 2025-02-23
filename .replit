@@ -1,8 +1,15 @@
 modules = ["ruby-3.3", "web", "nodejs-20", "bash"]
 run = "bin/setup && bin/serve"
 
+[env]
+RACK_MINI_PROFILER = "off"
+PIDFILE = "/tmp/rails_server.pid"
+
 [nix]
 channel = "stable-24_05"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix"]
 
 [workflows]
 
