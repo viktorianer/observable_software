@@ -1,24 +1,25 @@
-# README
+# Fix Bugs 20x Faster - Zero to Incident Superhero Workshop
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* MiniCrossStitching Rails app
+* Contains a mystery defect
 
-Things you may want to cover:
+## Resources
 
-* Ruby version
+* [Step by Step Guide](https://joyfulprogramming.notion.site/ruby-conference-workshop)
+* [Slides](https://docs.google.com/presentation/d/1itkecrl8GRwo_EplJ_aJDD2hWK0Np44W7I4hlV1ZD1c/edit?usp=sharing)
 
-* System dependencies
+## Setup
 
-* Configuration
+1. Remix this template
+2. Press "Run" in Replit. This will run `bin/setup` then `bin/serve`.
+3. Simulate users by running `bin/hammer`
 
-* Database creation
+## Commands
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bin/setup  # Setup the app
+bin/serve  # Start the server
+bin/hammer # Simulate users
+bin/errors # Show errors in Solid Errors
+bin/open   # Open app in new tab
+```
