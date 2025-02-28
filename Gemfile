@@ -1,9 +1,7 @@
 source "https://rubygems.org"
 
-ruby "3.3.1"
-
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.0.rc1"
+gem "rails", "~> 8.0.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
@@ -95,3 +93,6 @@ gem "faraday-follow_redirects", "~> 0.3.0"
 gem "opentelemetry-sdk", "~> 1.7"
 gem "opentelemetry-exporter-otlp", "~> 0.29.1"
 gem "opentelemetry-instrumentation-all", "~> 0.74.0"
+
+gem "semantic_logger", "~> 4.16"
+gem "rails_semantic_logger", "~> 4.17"
